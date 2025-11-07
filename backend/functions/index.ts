@@ -63,9 +63,14 @@ const startServer = async (): Promise<void> => {
     validateEnv();
     logger.info('Environment variables validated');
 
-    // Connect to database
-    await connectDatabase();
-    logger.info('Database connected');
+    // Try to connect to database (non-blocking)
+    try {
+      await connectDatabase();
+      logger.info('Database connected');
+    } catch (dbError) {
+      logger.warn('Failed to connect to database, continuing without DB:', dbError);
+      logger.warn('Server will start but database operations will fail');
+    }
 
     // Create app
     const app = createApp();
