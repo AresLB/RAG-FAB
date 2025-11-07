@@ -10,6 +10,7 @@ import { generalLimiter } from '../middleware/rate-limit.middleware';
 // Import routes
 import authRoutes from './auth';
 import healthRoutes from './health';
+import documentRoutes from './documents';
 
 /**
  * Create Express application
@@ -44,6 +45,7 @@ const createApp = (): Application => {
   // Routes
   app.use('/api/v1/health', healthRoutes);
   app.use('/api/v1/auth', authRoutes);
+  app.use('/api/v1/documents', documentRoutes);
 
   // 404 handler
   app.use(notFoundHandler);
