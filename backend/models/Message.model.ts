@@ -44,6 +44,7 @@ const messageMetadataSchema = new Schema(
 
 const messageSchema = new Schema<IMessageModel>(
   {
+    // @ts-expect-error - Mongoose ObjectId type compatibility issue
     conversationId: {
       type: Schema.Types.ObjectId,
       ref: 'Conversation',

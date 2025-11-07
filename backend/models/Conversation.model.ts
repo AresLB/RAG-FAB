@@ -5,6 +5,7 @@ export interface IConversationModel extends Omit<IConversation, '_id'>, Mongoose
 
 const conversationSchema = new Schema<IConversationModel>(
   {
+    // @ts-expect-error - Mongoose ObjectId type compatibility issue
     userId: {
       type: Schema.Types.ObjectId,
       ref: 'User',

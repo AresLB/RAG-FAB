@@ -13,12 +13,14 @@ const chunkMetadataSchema = new Schema(
 
 const documentChunkSchema = new Schema<IDocumentChunkModel>(
   {
+    // @ts-expect-error - Mongoose ObjectId type compatibility issue
     documentId: {
       type: Schema.Types.ObjectId,
       ref: 'Document',
       required: [true, 'Document ID is required'],
       index: true
     },
+    // @ts-expect-error - Mongoose ObjectId type compatibility issue
     userId: {
       type: Schema.Types.ObjectId,
       ref: 'User',

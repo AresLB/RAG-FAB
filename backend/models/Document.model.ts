@@ -16,6 +16,7 @@ const documentMetadataSchema = new Schema(
 
 const documentSchema = new Schema<IDocumentModel>(
   {
+    // @ts-expect-error - Mongoose ObjectId type compatibility issue
     userId: {
       type: Schema.Types.ObjectId,
       ref: 'User',
@@ -89,6 +90,7 @@ documentSchema.index({ vectorized: 1 });
 
 // Virtual for document name display
 documentSchema.virtual('displayName').get(function () {
+  // @ts-expect-error - Mongoose virtual this context
   return this.originalName || this.fileName;
 });
 

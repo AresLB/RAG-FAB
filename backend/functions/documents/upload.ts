@@ -4,7 +4,7 @@ import { User } from '../../models/User.model';
 import { Document } from '../../models/Document.model';
 import { UsageRecord } from '../../models/UsageRecord.model';
 import { validateUploadedFile, getFileSizeLimit } from '../../middleware/upload.middleware';
-import { processDocument } from '../../services/documents/document-processor';
+import { processDocumentWithRAG } from '../../services/documents/document-processor';
 import { IApiResponse, HttpStatus, ApiErrorCode } from '../../../shared/types/api.types';
 import { IDocumentUploadResponse } from '../../../shared/types/document.types';
 import { AppError, SubscriptionLimitError } from '../../utils/errors';
@@ -58,7 +58,7 @@ export const uploadDocument = asyncHandler(async (req: Request, res: Response): 
     const uploadsDir = path.join(__dirname, '../../uploads');
     const filePath = path.join(uploadsDir, file.filename);
 
-    const result = await processDocument({
+    const result = await processDocumentWithRAG({
       userId,
       filename: file.filename,
       originalName: file.originalname,
