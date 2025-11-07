@@ -5,7 +5,6 @@ export interface IMessageModel extends Omit<IMessage, '_id'>, MongooseDocument {
 
 const messageSourceSchema = new Schema(
   {
-    // @ts-expect-error - Mongoose ObjectId type compatibility issue
     documentId: {
       type: Schema.Types.ObjectId,
       ref: 'Document',

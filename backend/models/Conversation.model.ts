@@ -14,7 +14,6 @@ const conversationSchema = new Schema<IConversationModel>(
     },
     documentIds: [
       {
-        // @ts-expect-error - Mongoose ObjectId type compatibility issue
         type: Schema.Types.ObjectId,
         ref: 'Document'
       }
