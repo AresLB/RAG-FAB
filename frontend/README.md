@@ -1,40 +1,36 @@
-# Frontend
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-Next.js-basiertes Frontend für die RAG-FAB Plattform.
+## Getting Started
 
-## Struktur
+First, run the development server:
 
-- **components/** - React-Komponenten
-  - `common/` - Wiederverwendbare UI-Komponenten (Button, Input, Card, etc.)
-  - `chat/` - Chat-Interface und Chatbot-Komponenten
-  - `upload/` - Dokument-Upload UI und Drag & Drop
-  - `auth/` - Login, Registrierung, Passwort-Reset
-  - `dashboard/` - Dashboard-spezifische Komponenten
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
 
-- **pages/** - Next.js Pages (File-based Routing)
-  - `api/` - API Routes für Next.js
-  - `dashboard/` - Dashboard-Seiten
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-- **styles/** - Global Styles und CSS-Module
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-- **hooks/** - Custom React Hooks
-  - Beispiel: `useAuth`, `useChat`, `useDocuments`
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-- **utils/** - Utility-Funktionen und Helper
+## Learn More
 
-- **services/** - API-Client und Services für Backend-Kommunikation
-  - `api.ts` - Axios/Fetch Wrapper
-  - `auth.service.ts` - Authentifizierung
-  - `documents.service.ts` - Dokumenten-Upload/-Management
-  - `chat.service.ts` - Chat-API
+To learn more about Next.js, take a look at the following resources:
 
-- **public/** - Statische Assets (Bilder, Icons, Fonts)
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-## Tech Stack
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-- **Framework:** Next.js 14+ (App Router)
-- **Styling:** Tailwind CSS / CSS Modules
-- **State Management:** React Context / Zustand
-- **Forms:** React Hook Form
-- **API Client:** Axios
-- **UI Library:** shadcn/ui / Radix UI
+## Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
