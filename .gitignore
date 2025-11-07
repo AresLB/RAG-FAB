@@ -80,3 +80,7 @@ secrets/
 *.key
 *.pem
 *.crt
+
+# Uploads
+backend/uploads/
+uploads/
