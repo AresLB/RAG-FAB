@@ -12,6 +12,7 @@ export interface TokenPair {
  * Generate access token
  */
 export const generateAccessToken = (payload: ITokenPayload): string => {
+  // @ts-ignore - JWT type definitions have compatibility issues
   return jwt.sign(payload, env.JWT_SECRET, {
     expiresIn: env.JWT_EXPIRATION
   });
@@ -21,6 +22,7 @@ export const generateAccessToken = (payload: ITokenPayload): string => {
  * Generate refresh token
  */
 export const generateRefreshToken = (payload: ITokenPayload): string => {
+  // @ts-ignore - JWT type definitions have compatibility issues
   return jwt.sign(payload, env.JWT_REFRESH_SECRET, {
     expiresIn: env.JWT_REFRESH_EXPIRATION
   });

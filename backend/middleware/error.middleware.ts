@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { AppError, isOperationalError } from '../utils/errors';
+import { AppError } from '../utils/errors';
 import { ApiErrorCode, HttpStatus, IApiResponse } from '../../shared/types/api.types';
 import { logger } from '../utils/logger';
 import { isDevelopment } from '../config/env';
@@ -11,7 +11,7 @@ export const errorHandler = (
   error: Error,
   req: Request,
   res: Response,
-  next: NextFunction
+  _next: NextFunction
 ): void => {
   // Log error
   logger.error('Error occurred:', {

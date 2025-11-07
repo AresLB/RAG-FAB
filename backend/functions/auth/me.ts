@@ -30,7 +30,7 @@ export const getMe = asyncHandler(async (req: Request, res: Response): Promise<v
   const response: IApiResponse = {
     success: true,
     data: {
-      _id: user._id.toString(),
+      _id: user.id,
       email: user.email,
       firstName: user.firstName,
       lastName: user.lastName,

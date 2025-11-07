@@ -82,11 +82,11 @@ export const register = asyncHandler(async (req: Request, res: Response): Promis
     }
   });
 
-  logger.info(`User registered successfully: ${user._id}`);
+  logger.info(`User registered successfully: ${user.id}`);
 
   // Generate tokens
   const tokens = generateTokenPair({
-    userId: user._id.toString(),
+    userId: user.id,
     email: user.email,
     role: user.role
   });
@@ -94,7 +94,7 @@ export const register = asyncHandler(async (req: Request, res: Response): Promis
   // Prepare response
   const authResponse: IAuthResponse = {
     user: {
-      _id: user._id.toString(),
+      _id: user.id,
       email: user.email,
       firstName: user.firstName,
       lastName: user.lastName,

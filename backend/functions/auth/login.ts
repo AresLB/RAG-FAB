@@ -49,11 +49,11 @@ export const login = asyncHandler(async (req: Request, res: Response): Promise<v
     throw new AuthenticationError('Your subscription is inactive. Please contact support.');
   }
 
-  logger.info(`User logged in successfully: ${user._id}`);
+  logger.info(`User logged in successfully: ${user.id}`);
 
   // Generate tokens
   const tokens = generateTokenPair({
-    userId: user._id.toString(),
+    userId: user.id,
     email: user.email,
     role: user.role
   });
@@ -61,7 +61,7 @@ export const login = asyncHandler(async (req: Request, res: Response): Promise<v
   // Prepare response (exclude password)
   const authResponse: IAuthResponse = {
     user: {
-      _id: user._id.toString(),
+      _id: user.id,
       email: user.email,
       firstName: user.firstName,
       lastName: user.lastName,

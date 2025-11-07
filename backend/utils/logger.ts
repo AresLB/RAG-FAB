@@ -1,5 +1,5 @@
 import winston from 'winston';
-import { env, isDevelopment } from '../config/env';
+import { isDevelopment } from '../config/env';
 
 // Define log levels
 const levels = {

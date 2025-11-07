@@ -51,7 +51,7 @@ export const refresh = asyncHandler(async (req: Request, res: Response): Promise
 
   // Check if subscription is active
   if (!user.isSubscriptionActive()) {
-    logger.warn(`Token refresh failed: Subscription inactive - ${user._id}`);
+    logger.warn(`Token refresh failed: Subscription inactive - ${user.id}`);
     throw new AppError(
       ApiErrorCode.SUBSCRIPTION_LIMIT_REACHED,
       'Your subscription is inactive',
@@ -59,11 +59,11 @@ export const refresh = asyncHandler(async (req: Request, res: Response): Promise
     );
   }
 
-  logger.info(`Token refreshed successfully for user: ${user._id}`);
+  logger.info(`Token refreshed successfully for user: ${user.id}`);
 
   // Generate new tokens
   const tokens = generateTokenPair({
-    userId: user._id.toString(),
+    userId: user.id.toString(),
     email: user.email,
     role: user.role
   });
