@@ -5,6 +5,7 @@ export interface IUsageRecordModel extends Omit<IUsageRecord, '_id'>, MongooseDo
 
 const usageRecordSchema = new Schema<IUsageRecordModel>(
   {
+    // @ts-expect-error - Mongoose ObjectId type compatibility issue
     userId: {
       type: Schema.Types.ObjectId,
       ref: 'User',

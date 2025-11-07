@@ -26,7 +26,7 @@ export const extractTextFromPDF = async (filePath: string): Promise<ExtractionRe
       text: data.text,
       metadata: {
         pageCount: data.numpages,
-        wordCount: data.text.split(/\s+/).filter((word) => word.length > 0).length,
+        wordCount: data.text.split(/\s+/).filter((word: string) => word.length > 0).length,
         characterCount: data.text.length
       }
     };
@@ -46,7 +46,7 @@ export const extractTextFromDOCX = async (filePath: string): Promise<ExtractionR
     return {
       text: result.value,
       metadata: {
-        wordCount: result.value.split(/\s+/).filter((word) => word.length > 0).length,
+        wordCount: result.value.split(/\s+/).filter((word: string) => word.length > 0).length,
         characterCount: result.value.length
       }
     };
@@ -66,7 +66,7 @@ export const extractTextFromTXT = async (filePath: string): Promise<ExtractionRe
     return {
       text,
       metadata: {
-        wordCount: text.split(/\s+/).filter((word) => word.length > 0).length,
+        wordCount: text.split(/\s+/).filter((word: string) => word.length > 0).length,
         characterCount: text.length
       }
     };
