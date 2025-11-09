@@ -2,6 +2,7 @@ import OpenAI from 'openai';
 import { env } from '../../config/env';
 import { logger } from '../../utils/logger';
 import { performRAGQuery, RAGQueryInput, RAGContext } from '../rag/rag-service';
+import { getSystemPrompt, detectDomain, PromptDomain } from './prompts';
 
 // Initialize OpenAI client
 const openai = new OpenAI({
@@ -124,38 +125,48 @@ export const generateChatCompletion = async (
 };
 
 /**
- * Build system prompt with RAG context
+ * Build system prompt with RAG context and domain-specific instructions
  */
 const buildSystemPrompt = (ragContext: RAGContext): string => {
   if (ragContext.relevantChunks.length === 0) {
-    return `You are a helpful AI assistant. The user asked a question, but no relevant information was found in their documents.
+    return `Du bist ein hilfreicher KI-Assistent. Der User hat eine Frage gestellt, aber keine relevanten Informationen wurden in den Dokumenten gefunden.
 
-Please let them know that you couldn't find relevant information in their uploaded documents to answer this question.
-Suggest they either:
-1. Upload documents that contain information about this topic
-2. Rephrase their question
-3. Ask a different question about their existing documents
+Teile höflich mit, dass keine relevanten Informationen in den hochgeladenen Dokumenten gefunden wurden.
+Schlage vor:
+1. Dokumente hochzuladen, die Informationen zu diesem Thema enthalten
+2. Die Frage umzuformulieren
+3. Eine andere Frage zu den vorhandenen Dokumenten zu stellen
 
-Be polite and helpful.`;
+Sei höflich und hilfsbereit.`;
   }
 
-  return `You are a helpful AI assistant that answers questions based on the user's uploaded documents.
+  // Detect domain from documents
+  const firstChunk = ragContext.relevantChunks[0];
+  const documentName = firstChunk?.documentName || '';
+  const documentContent = ragContext.contextText.substring(0, 2000);
 
-IMPORTANT INSTRUCTIONS:
-1. Base your answer ONLY on the information provided in the context below
-2. If the context doesn't contain enough information to answer the question, say so clearly
-3. Cite which document(s) you're referencing in your answer
-4. Be concise but thorough
-5. If you're unsure, express uncertainty rather than making up information
-6. Use a friendly, professional tone
+  const domain = detectDomain(documentName, documentContent);
 
-RELEVANT CONTEXT FROM USER'S DOCUMENTS:
+  logger.debug('Domain detected for prompt', { domain, documentName });
+
+  // Get domain-specific system prompt
+  const domainPrompt = getSystemPrompt({
+    domain,
+    language: 'de' // Could be detected from content or user settings
+  });
+
+  // Combine domain prompt with context
+  return `${domainPrompt}
+
+---
+
+RELEVANTER KONTEXT AUS DEN DOKUMENTEN:
 
 ${ragContext.contextText}
 
 ---
 
-Now, answer the user's question based on this context. If the context doesn't contain relevant information, be honest about it.`;
+Beantworte nun die Frage des Users basierend auf diesem Kontext. Wenn der Kontext keine ausreichenden Informationen enthält, sei ehrlich darüber.`;
 };
 
 /**

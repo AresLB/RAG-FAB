@@ -4,7 +4,7 @@ import { Document } from '../../models/Document.model';
 import { DocumentChunk } from '../../models/DocumentChunk.model';
 import { DocumentStatus, DocumentType } from '../../../shared/types/document.types';
 import { extractText, getDocumentType, cleanText } from '../ocr/text-extractor';
-import { chunkText } from '../rag/text-chunker';
+import { createSemanticChunks } from '../rag/semantic-chunker';
 import { batchUpsertVectors, deleteDocumentVectors } from '../rag/vector-service';
 import { logger } from '../../utils/logger';
 
@@ -137,16 +137,24 @@ export const processDocumentWithRAG = async (
 
     logger.info(`Text extraction successful for document: ${document.id}`);
 
-    // Step 2: Chunk text
+    // Step 2: Semantic Chunking (intelligent, structure-aware)
     document.status = DocumentStatus.CHUNKING;
     await document.save();
 
-    const chunkResult = chunkText(cleanedText, {}, {
-      fileName: originalName,
-      fileType
+    const chunkResult = createSemanticChunks(cleanedText, {
+      targetChunkSize: 800,
+      minChunkSize: 200,
+      maxChunkSize: 1200,
+      overlapSize: 150,
+      respectParagraphs: true,
+      respectSentences: true
     });
 
-    logger.info(`Text chunked into ${chunkResult.totalChunks} chunks`);
+    logger.info(`Text chunked into ${chunkResult.totalChunks} semantic chunks`, {
+      avgChunkSize: chunkResult.avgChunkSize,
+      headingsDetected: chunkResult.metadata.headingsDetected,
+      paragraphsDetected: chunkResult.metadata.paragraphsDetected
+    });
 
     // Step 3: Prepare chunks for database and Pinecone
     document.status = DocumentStatus.EMBEDDING;
