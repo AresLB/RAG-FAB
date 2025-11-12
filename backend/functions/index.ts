@@ -125,3 +125,6 @@ if (require.main === module) {
 }
 
 export { createApp, startServer };
+
+// Export for Vercel serverless
+export default createApp();
