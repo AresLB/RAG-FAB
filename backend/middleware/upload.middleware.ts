@@ -8,21 +8,9 @@ import { ApiErrorCode, HttpStatus } from '../../shared/types/api.types';
 import { SubscriptionPlan } from '../../shared/types/user.types';
 import { getMaxFileSize } from '../../shared/constants/plans';
 
-// Upload directory
-const UPLOAD_DIR = path.join(__dirname, '../uploads');
-
-// File storage configuration
-const storage = multer.diskStorage({
-  destination: (_req, _file, cb) => {
-    cb(null, UPLOAD_DIR);
-  },
-  filename: (_req, file, cb) => {
-    const uniqueId = uuidv4();
-    const ext = path.extname(file.originalname);
-    const filename = `${uniqueId}${ext}`;
-    cb(null, filename);
-  }
-});
+// Use memory storage for serverless environments (Vercel)
+// Files are processed immediately and not persisted to disk
+const storage = multer.memoryStorage();
 
 // File filter - only allow PDF, DOCX, TXT
 const fileFilter = (req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {

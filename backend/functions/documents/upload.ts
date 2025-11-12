@@ -55,16 +55,35 @@ export const uploadDocument = asyncHandler(async (req: Request, res: Response): 
 
   // Process document
   try {
-    const uploadsDir = path.join(__dirname, '../../uploads');
-    const filePath = path.join(uploadsDir, file.filename);
+    // For serverless/memory storage, write to /tmp temporarily
+    const fs = require('fs');
+    const { v4: uuidv4 } = require('uuid');
+
+    const uniqueId = uuidv4();
+    const ext = path.extname(file.originalname);
+    const filename = `${uniqueId}${ext}`;
+
+    // Use /tmp directory for serverless environments (Vercel)
+    const tmpDir = '/tmp';
+    const filePath = path.join(tmpDir, filename);
+
+    // Write buffer to temporary file
+    fs.writeFileSync(filePath, file.buffer);
 
     const result = await processDocumentWithRAG({
       userId,
-      filename: file.filename,
+      filename,
       originalName: file.originalname,
       filePath,
       fileSize: file.size
     });
+
+    // Clean up temporary file after processing
+    try {
+      fs.unlinkSync(filePath);
+    } catch (cleanupError) {
+      logger.warn(`Failed to clean up temporary file: ${filePath}`, cleanupError);
+    }
 
     // Update user's document count
     user.subscription.documentsUsed = currentDocCount + 1;

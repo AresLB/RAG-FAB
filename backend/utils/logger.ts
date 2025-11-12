@@ -43,29 +43,45 @@ const consoleFormat = winston.format.combine(
 
 // Define transports
 const transports: winston.transport[] = [
-  // Console transport
+  // Console transport (always enabled)
   new winston.transports.Console({
     format: isDevelopment ? consoleFormat : format
   })
 ];
 
-// Add file transports in production
-if (!isDevelopment) {
-  transports.push(
-    // Error log file
-    new winston.transports.File({
-      filename: 'logs/error.log',
-      level: 'error',
-      maxsize: 5242880, // 5MB
-      maxFiles: 5
-    }),
-    // Combined log file
-    new winston.transports.File({
-      filename: 'logs/combined.log',
-      maxsize: 5242880, // 5MB
-      maxFiles: 5
-    })
-  );
+// Only add file transports in local development (NOT in Vercel/serverless)
+// Vercel logs are available in the dashboard and file system is read-only
+const isVercel = process.env.VERCEL === '1';
+if (isDevelopment && !isVercel) {
+  try {
+    const fs = require('fs');
+    const path = require('path');
+    const logDir = path.join(process.cwd(), 'logs');
+
+    // Create logs directory if it doesn't exist
+    if (!fs.existsSync(logDir)) {
+      fs.mkdirSync(logDir, { recursive: true });
+    }
+
+    transports.push(
+      // Error log file
+      new winston.transports.File({
+        filename: 'logs/error.log',
+        level: 'error',
+        maxsize: 5242880, // 5MB
+        maxFiles: 5
+      }),
+      // Combined log file
+      new winston.transports.File({
+        filename: 'logs/combined.log',
+        maxsize: 5242880, // 5MB
+        maxFiles: 5
+      })
+    );
+  } catch (error) {
+    // Silently fail if we can't create log files (e.g., in serverless)
+    console.warn('Could not create file transports for logging:', error);
+  }
 }
 
 // Create logger
