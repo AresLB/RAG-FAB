@@ -71,7 +71,7 @@ export async function fetchGmailEmails(
         subject,
         body,
         receivedAt: date ? new Date(date) : new Date(),
-        threadId: message.threadId
+        threadId: message.threadId ?? undefined
       });
     }
 
