@@ -13,6 +13,7 @@ import healthRoutes from './health';
 import documentRoutes from './documents';
 import chatRoutes from './chat';
 import agentRoutes from './agents';
+import oauthRoutes from './oauth';
 
 /**
  * Create Express application
@@ -46,6 +47,7 @@ const createApp = (): Application => {
 
   // Routes
   app.use('/api/v1/health', healthRoutes);
+  app.use('/api/v1/oauth', oauthRoutes);
   app.use('/api/v1/auth', authRoutes);
   app.use('/api/v1/documents', documentRoutes);
   app.use('/api/v1/chat', chatRoutes);
