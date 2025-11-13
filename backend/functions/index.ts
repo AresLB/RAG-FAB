@@ -21,6 +21,9 @@ import oauthRoutes from './oauth';
 const createApp = (): Application => {
   const app = express();
 
+  // Trust proxy - required for Vercel (behind reverse proxy)
+  app.set('trust proxy', 1);
+
   // Security middleware
   app.use(helmet());
 
