@@ -10,12 +10,26 @@ async function ensureDbConnection() {
   if (isConnected) return;
 
   try {
+    // Log the DATABASE_URL to verify it's set (without showing full credentials)
+    const dbUrl = process.env.DATABASE_URL || process.env.MONGODB_URI;
+    if (!dbUrl) {
+      logger.error('DATABASE_URL or MONGODB_URI environment variable is not set!');
+      return;
+    }
+
+    // Log first 20 chars to verify it's there (without exposing password)
+    logger.info(`Attempting DB connection with URL: ${dbUrl.substring(0, 20)}...`);
+
     validateEnv();
     await connectDatabase();
     isConnected = true;
-    logger.info('Database connected in serverless function');
-  } catch (error) {
-    logger.warn('Database connection failed, continuing without DB:', error);
+    logger.info('✅ Database connected successfully in serverless function');
+  } catch (error: any) {
+    logger.error('❌ Database connection failed:', {
+      error: error.message,
+      code: error.code,
+      stack: error.stack
+    });
   }
 }
 
