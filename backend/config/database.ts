@@ -11,10 +11,11 @@ const getDatabaseConfig = (): DatabaseConfig => {
 
   // Fix Vercel's auto-generated MONGODB_URI if it's missing the database name
   // Vercel Storage creates: mongodb+srv://...@host.net/?options
-  // We need: mongodb+srv://...@host.net/responobis?options
+  // We need: mongodb+srv://...@host.net/rag-fab?options
+  // MongoDB will automatically create the database on first write
   if (uri.includes('mongodb+srv://') && uri.match(/\.net\/\?/)) {
-    uri = uri.replace(/\.net\/\?/, '.net/responobis?');
-    logger.info('Added missing database name to MONGODB_URI');
+    uri = uri.replace(/\.net\/\?/, '.net/rag-fab?');
+    logger.info('Added missing database name (rag-fab) to MONGODB_URI');
   }
 
   const options: mongoose.ConnectOptions = {
