@@ -12,7 +12,7 @@ interface EnvironmentConfig {
   API_URL: string;
 
   // Database
-  DATABASE_URL: string;
+  MONGODB_URI: string;
 
   // JWT
   JWT_SECRET: string;
@@ -68,7 +68,7 @@ export const env: EnvironmentConfig = {
   API_URL: getEnvVar('API_URL', 'http://localhost:3000/api'),
 
   // Database
-  DATABASE_URL: getEnvVar('DATABASE_URL', 'mongodb://localhost:27017/rag-fab'),
+  MONGODB_URI: getEnvVar('MONGODB_URI', 'mongodb://localhost:27017/rag-fab'),
 
   // JWT
   JWT_SECRET: getEnvVar('JWT_SECRET', 'your-super-secret-jwt-key-change-in-production'),
@@ -110,7 +110,7 @@ export const env: EnvironmentConfig = {
 export const validateEnv = (): void => {
   if (env.NODE_ENV === 'production') {
     const criticalVars = [
-      'DATABASE_URL',
+      'MONGODB_URI',
       'JWT_SECRET',
       'JWT_REFRESH_SECRET',
       'OPENAI_API_KEY',

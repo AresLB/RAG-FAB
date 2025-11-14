@@ -10,10 +10,10 @@ async function initializeDatabase() {
   if (isConnected) return;
 
   try {
-    const dbUrl = process.env.DATABASE_URL || process.env.MONGODB_URI;
+    const dbUrl = process.env.MONGODB_URI;
 
     if (!dbUrl) {
-      logger.error('❌ DATABASE_URL or MONGODB_URI environment variable is not set!');
+      logger.error('❌ MONGODB_URI environment variable is not set!');
       logger.error('Available env vars (non-secret):',
         Object.keys(process.env)
           .filter(k => !k.includes('SECRET') && !k.includes('KEY') && !k.includes('PASSWORD'))

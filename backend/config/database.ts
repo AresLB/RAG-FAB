@@ -7,7 +7,7 @@ interface DatabaseConfig {
 }
 
 const getDatabaseConfig = (): DatabaseConfig => {
-  const uri = process.env.DATABASE_URL || 'mongodb://localhost:27017/rag-fab';
+  const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017/rag-fab';
 
   const options: mongoose.ConnectOptions = {
     maxPoolSize: 10,
