@@ -1,11 +1,29 @@
 /**
  * Subscription Plans Configuration
  */
-
 import { SubscriptionPlan } from '../types/user.types';
-import { IPlanFeatures } from '../types/subscription.types';
 
-export const PLANS: Record<SubscriptionPlan, IPlanFeatures> = {
+export interface PlanFeatures {
+  questionsPerMonth: number | 'unlimited';
+  documentsLimit: number | 'unlimited';
+  maxFileSize: number; // in MB
+  prioritySupport: boolean;
+  advancedAnalytics: boolean;
+  apiAccess: boolean;
+  customIntegrations: boolean;
+}
+
+export interface PlanConfig {
+  plan: SubscriptionPlan;
+  name: string;
+  price: number;
+  currency: string;
+  interval: 'month' | 'year';
+  features: PlanFeatures;
+  stripePriceId?: string;
+}
+
+export const PLANS: Record<SubscriptionPlan, PlanConfig> = {
   [SubscriptionPlan.FREE]: {
     plan: SubscriptionPlan.FREE,
     name: 'Free',
@@ -59,7 +77,7 @@ export const PLANS: Record<SubscriptionPlan, IPlanFeatures> = {
 };
 
 // Helper functions
-export const getPlanFeatures = (plan: SubscriptionPlan): IPlanFeatures => {
+export const getPlanFeatures = (plan: SubscriptionPlan): PlanConfig => {
   return PLANS[plan];
 };
 
