@@ -18,7 +18,7 @@ const msalConfig = {
 
 const pca = new ConfidentialClientApplication(msalConfig);
 
-const REDIRECT_URI = `${env.APP_URL}/auth/outlook/callback`;
+const REDIRECT_URI = `${env.API_URL}/api/v1/oauth/outlook/callback`;
 const SCOPES = [
   'openid',
   'profile',

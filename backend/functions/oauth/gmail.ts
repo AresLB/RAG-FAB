@@ -11,7 +11,7 @@ const router = Router();
 const oauth2Client = new google.auth.OAuth2(
   process.env.GOOGLE_CLIENT_ID,
   process.env.GOOGLE_CLIENT_SECRET,
-  `${env.APP_URL}/auth/gmail/callback`
+  `${env.API_URL}/api/v1/oauth/gmail/callback`
 );
 
 /**
