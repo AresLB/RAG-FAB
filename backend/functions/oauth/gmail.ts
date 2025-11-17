@@ -40,29 +40,38 @@ router.get('/gmail', (req: Request, res: Response) => {
 router.get(
   '/gmail/callback',
   asyncHandler(async (req: Request, res: Response) => {
+    console.log('📧 Gmail callback received');
     const { code } = req.query;
 
     if (!code) {
+      console.log('❌ No code received');
       return res.redirect(`${env.APP_URL}/login?error=oauth_failed`);
     }
 
     try {
+      console.log('🔄 Exchanging code for tokens...');
       // Exchange code for tokens
       const { tokens } = await oauth2Client.getToken(code as string);
       oauth2Client.setCredentials(tokens);
+      console.log('✅ Tokens received');
 
       // Get user info
+      console.log('🔄 Fetching user info...');
       const oauth2 = google.oauth2({ version: 'v2', auth: oauth2Client });
       const { data } = await oauth2.userinfo.get();
+      console.log('✅ User info received:', data.email);
 
       if (!data.email) {
+        console.log('❌ No email in user data');
         return res.redirect(`${env.APP_URL}/login?error=no_email`);
       }
 
       // Find or create user
+      console.log('🔄 Finding or creating user in database...');
       let user = await User.findOne({ email: data.email });
 
       if (!user) {
+        console.log('🔄 User not found, creating new user...');
         // Create new user
         user = await User.create({
           email: data.email,
@@ -77,25 +86,36 @@ router.get(
             documentsUsed: 0
           }
         });
+        console.log('✅ New user created:', user.id);
+      } else {
+        console.log('✅ Existing user found:', user.id);
       }
 
       // Store OAuth tokens in user profile (optional)
       // You might want to create a separate OAuthTokens model
 
       // Generate JWT tokens
+      console.log('🔄 Generating JWT tokens...');
       const jwtTokens = generateTokenPair({
         userId: user.id,
         email: user.email,
         role: user.role
       });
+      console.log('✅ JWT tokens generated');
 
       logger.info('Gmail OAuth successful', { userId: user.id });
 
       // Redirect to frontend with tokens
-      res.redirect(
-        `${env.APP_URL}/auth/callback?token=${jwtTokens.accessToken}&refresh=${jwtTokens.refreshToken}&provider=gmail`
-      );
+      const redirectUrl = `${env.APP_URL}/auth/callback?token=${jwtTokens.accessToken}&refresh=${jwtTokens.refreshToken}&provider=gmail`;
+      console.log('🔄 Redirecting to:', redirectUrl.substring(0, 100) + '...');
+      res.redirect(redirectUrl);
     } catch (error: any) {
+      console.error('❌ Gmail OAuth failed:', error);
+      console.error('Error details:', {
+        message: error.message,
+        stack: error.stack,
+        name: error.name
+      });
       logger.error('Gmail OAuth failed', { error: error.message });
       res.redirect(`${env.APP_URL}/login?error=oauth_failed`);
     }

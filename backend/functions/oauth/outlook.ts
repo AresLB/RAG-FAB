@@ -58,13 +58,16 @@ router.get('/outlook', (req: Request, res: Response) => {
 router.get(
   '/outlook/callback',
   asyncHandler(async (req: Request, res: Response) => {
+    console.log('📧 Outlook callback received');
     const { code } = req.query;
 
     if (!code) {
+      console.log('❌ No code received');
       return res.redirect(`${env.APP_URL}/login?error=oauth_failed`);
     }
 
     try {
+      console.log('🔄 Exchanging code for tokens...');
       // Exchange code for tokens
       const tokenRequest = {
         code: code as string,
@@ -73,21 +76,27 @@ router.get(
       };
 
       const response = await pca.acquireTokenByCode(tokenRequest);
+      console.log('✅ Token response received');
 
       if (!response || !response.account) {
+        console.log('❌ No account in response');
         return res.redirect(`${env.APP_URL}/login?error=no_account`);
       }
 
       const email = response.account.username;
+      console.log('✅ User email:', email);
 
       if (!email) {
+        console.log('❌ No email in account');
         return res.redirect(`${env.APP_URL}/login?error=no_email`);
       }
 
       // Find or create user
+      console.log('🔄 Finding or creating user in database...');
       let user = await User.findOne({ email });
 
       if (!user) {
+        console.log('🔄 User not found, creating new user...');
         // Create new user
         const name = response.account.name || '';
         const nameParts = name.split(' ');
@@ -105,25 +114,36 @@ router.get(
             documentsUsed: 0
           }
         });
+        console.log('✅ New user created:', user.id);
+      } else {
+        console.log('✅ Existing user found:', user.id);
       }
 
       // Store OAuth tokens in user profile (optional)
       // You might want to create a separate OAuthTokens model
 
       // Generate JWT tokens
+      console.log('🔄 Generating JWT tokens...');
       const jwtTokens = generateTokenPair({
         userId: user.id,
         email: user.email,
         role: user.role
       });
+      console.log('✅ JWT tokens generated');
 
       logger.info('Outlook OAuth successful', { userId: user.id });
 
       // Redirect to frontend with tokens
-      res.redirect(
-        `${env.APP_URL}/auth/callback?token=${jwtTokens.accessToken}&refresh=${jwtTokens.refreshToken}&provider=outlook`
-      );
+      const redirectUrl = `${env.APP_URL}/auth/callback?token=${jwtTokens.accessToken}&refresh=${jwtTokens.refreshToken}&provider=outlook`;
+      console.log('🔄 Redirecting to:', redirectUrl.substring(0, 100) + '...');
+      res.redirect(redirectUrl);
     } catch (error: any) {
+      console.error('❌ Outlook OAuth failed:', error);
+      console.error('Error details:', {
+        message: error.message,
+        stack: error.stack,
+        name: error.name
+      });
       logger.error('Outlook OAuth failed', { error: error.message });
       res.redirect(`${env.APP_URL}/login?error=oauth_failed`);
     }
