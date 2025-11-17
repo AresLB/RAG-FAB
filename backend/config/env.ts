@@ -60,12 +60,17 @@ const getEnvNumber = (key: string, defaultValue: number): number => {
   return value ? parseInt(value, 10) : defaultValue;
 };
 
+// Remove trailing slash from URL
+const removeTrailingSlash = (url: string): string => {
+  return url.endsWith('/') ? url.slice(0, -1) : url;
+};
+
 export const env: EnvironmentConfig = {
   // App
   NODE_ENV: getEnvVar('NODE_ENV', 'development'),
   PORT: getEnvNumber('PORT', 3000),
-  APP_URL: getEnvVar('APP_URL', 'http://localhost:3000'),
-  API_URL: getEnvVar('API_URL', 'http://localhost:3000/api'),
+  APP_URL: removeTrailingSlash(getEnvVar('APP_URL', 'http://localhost:3000')),
+  API_URL: removeTrailingSlash(getEnvVar('API_URL', 'http://localhost:3000/api')),
 
   // Database
   MONGODB_URI: getEnvVar('MONGODB_URI', 'mongodb://localhost:27017/rag-fab'),
