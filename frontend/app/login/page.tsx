@@ -10,12 +10,12 @@ function LoginContent() {
 
   const handleGmailLogin = () => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-    window.location.href = `${apiUrl}/oauth/gmail`;
+    window.location.href = `${apiUrl}/api/v1/oauth/gmail`;
   };
 
   const handleOutlookLogin = () => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-    window.location.href = `${apiUrl}/oauth/outlook`;
+    window.location.href = `${apiUrl}/api/v1/oauth/outlook`;
   };
 
   return (
