@@ -97,14 +97,23 @@ router.get(
 
       if (!user) {
         console.log('🔄 User not found, creating new user...');
-        // Create new user
+
+        // Extract name from Microsoft account or email as fallback
         const name = response.account.name || '';
-        const nameParts = name.split(' ');
+        const nameParts = name.trim().split(' ');
+        const emailLocalPart = email.split('@')[0];
+
+        const firstName = (nameParts[0] && nameParts[0].length >= 2)
+          ? nameParts[0]
+          : emailLocalPart || 'User';
+        const lastName = (nameParts.length > 1)
+          ? nameParts.slice(1).join(' ')
+          : '';
 
         user = await User.create({
           email,
-          firstName: nameParts[0] || '',
-          lastName: nameParts.slice(1).join(' ') || '',
+          firstName,
+          lastName,
           password: Math.random().toString(36), // Random password (OAuth login)
           role: 'user',
           subscription: {

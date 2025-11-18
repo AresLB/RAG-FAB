@@ -72,11 +72,17 @@ router.get(
 
       if (!user) {
         console.log('🔄 User not found, creating new user...');
+
+        // Extract name from email as fallback
+        const emailLocalPart = data.email.split('@')[0];
+        const firstName = data.given_name || emailLocalPart || 'User';
+        const lastName = data.family_name || '';
+
         // Create new user
         user = await User.create({
           email: data.email,
-          firstName: data.given_name || '',
-          lastName: data.family_name || '',
+          firstName,
+          lastName,
           password: Math.random().toString(36), // Random password (OAuth login)
           role: 'user',
           subscription: {

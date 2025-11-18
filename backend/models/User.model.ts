@@ -64,20 +64,20 @@ const userSchema = new Schema<IUserDocument>(
     },
     password: {
       type: String,
-      required: [true, 'Password is required'],
+      required: false, // Optional for OAuth users
       minlength: [8, 'Password must be at least 8 characters'],
       select: false // Don't return password by default
     },
     firstName: {
       type: String,
-      required: [true, 'First name is required'],
+      required: false, // Optional for OAuth users
       trim: true,
       minlength: [2, 'First name must be at least 2 characters'],
       maxlength: [50, 'First name cannot exceed 50 characters']
     },
     lastName: {
       type: String,
-      required: [true, 'Last name is required'],
+      required: false, // Optional for OAuth users
       trim: true,
       minlength: [2, 'Last name must be at least 2 characters'],
       maxlength: [50, 'Last name cannot exceed 50 characters']
