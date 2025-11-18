@@ -6,6 +6,7 @@ import { connectDatabase } from '../config/database';
 import { logger, stream } from '../utils/logger';
 import { errorHandler, notFoundHandler } from '../middleware/error.middleware';
 import { generalLimiter } from '../middleware/rate-limit.middleware';
+import { ensureDatabaseConnection } from '../middleware/database.middleware';
 
 // Import routes
 import authRoutes from './auth';
@@ -47,6 +48,10 @@ const createApp = (): Application => {
 
   // Rate limiting (apply globally)
   app.use('/api', generalLimiter);
+
+  // Database connection middleware (for Vercel Serverless)
+  // Ensures DB is connected before handling any API requests
+  app.use('/api/v1', ensureDatabaseConnection);
 
   // Routes
   app.use('/api/v1/health', healthRoutes);
