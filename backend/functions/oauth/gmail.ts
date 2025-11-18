@@ -75,14 +75,19 @@ router.get(
 
         // Extract name from email as fallback
         const emailLocalPart = data.email.split('@')[0];
-        const firstName = data.given_name || emailLocalPart || 'User';
-        const lastName = data.family_name || '';
+        let firstName = data.given_name;
 
-        // Create new user
-        user = await User.create({
+        // Ensure firstName has at least 2 characters
+        if (!firstName || firstName.trim().length < 2) {
+          firstName = (emailLocalPart && emailLocalPart.length >= 2) ? emailLocalPart : 'User';
+        }
+
+        const lastName = data.family_name;
+
+        // Build user data - only include lastName if it has at least 2 characters
+        const userData: any = {
           email: data.email,
           firstName,
-          lastName,
           password: Math.random().toString(36), // Random password (OAuth login)
           role: 'user',
           subscription: {
@@ -91,7 +96,15 @@ router.get(
             questionsUsed: 0,
             documentsUsed: 0
           }
-        });
+        };
+
+        // Only add lastName if it meets minlength requirement (2 chars)
+        if (lastName && lastName.trim().length >= 2) {
+          userData.lastName = lastName;
+        }
+
+        // Create new user
+        user = await User.create(userData);
         console.log('✅ New user created:', user.id);
       } else {
         console.log('✅ Existing user found:', user.id);
