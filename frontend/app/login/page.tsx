@@ -7,6 +7,16 @@ import { useSearchParams } from 'next/navigation';
 function LoginContent() {
   const searchParams = useSearchParams();
   const error = searchParams.get('error');
+  const errorDetails = searchParams.get('details');
+
+  let parsedError = null;
+  if (errorDetails) {
+    try {
+      parsedError = JSON.parse(decodeURIComponent(errorDetails));
+    } catch (e) {
+      console.error('Failed to parse error details:', e);
+    }
+  }
 
   const handleGmailLogin = () => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
@@ -34,11 +44,28 @@ function LoginContent() {
         {/* Error Message */}
         {error && (
           <div className="mb-6 rounded-lg bg-red-50 border border-red-200 p-4">
-            <p className="text-sm text-red-800">
-              {error === 'oauth_failed' && 'Anmeldung fehlgeschlagen. Bitte versuchen Sie es erneut.'}
-              {error === 'no_email' && 'Keine Email-Adresse gefunden. Bitte versuchen Sie es erneut.'}
-              {error === 'no_account' && 'Konto nicht gefunden. Bitte versuchen Sie es erneut.'}
+            <p className="text-sm font-semibold text-red-800 mb-2">
+              {error === 'oauth_failed' && 'Anmeldung fehlgeschlagen'}
+              {error === 'no_email' && 'Keine Email-Adresse gefunden'}
+              {error === 'no_account' && 'Konto nicht gefunden'}
             </p>
+            {parsedError && (
+              <details className="mt-2">
+                <summary className="text-xs text-red-700 cursor-pointer hover:text-red-900">
+                  🔍 Technische Details anzeigen
+                </summary>
+                <div className="mt-2 p-2 bg-red-100 rounded text-xs font-mono text-red-900 overflow-auto max-h-40">
+                  <p><strong>Error:</strong> {parsedError.name}</p>
+                  <p><strong>Message:</strong> {parsedError.message}</p>
+                  {parsedError.stack && (
+                    <div className="mt-2">
+                      <strong>Stack:</strong>
+                      <pre className="text-[10px] whitespace-pre-wrap mt-1">{parsedError.stack}</pre>
+                    </div>
+                  )}
+                </div>
+              </details>
+            )}
           </div>
         )}
 

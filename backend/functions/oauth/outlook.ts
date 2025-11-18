@@ -145,7 +145,14 @@ router.get(
         name: error.name
       });
       logger.error('Outlook OAuth failed', { error: error.message });
-      res.redirect(`${env.APP_URL}/login?error=oauth_failed`);
+
+      // Send detailed error info to frontend for debugging
+      const errorDetails = encodeURIComponent(JSON.stringify({
+        message: error.message,
+        name: error.name,
+        stack: error.stack?.substring(0, 500) // Limit stack trace length
+      }));
+      res.redirect(`${env.APP_URL}/login?error=oauth_failed&details=${errorDetails}`);
     }
   })
 );
