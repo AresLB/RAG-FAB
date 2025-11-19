@@ -26,7 +26,7 @@ interface EnvironmentConfig {
 
   // Pinecone
   PINECONE_API_KEY: string;
-  PINECONE_ENVIRONMENT: string;
+  PINECONE_ENVIRONMENT?: string; // Optional for newer Pinecone accounts
   PINECONE_INDEX_NAME: string;
 
   // AWS
@@ -93,7 +93,7 @@ export const env: EnvironmentConfig = {
 
   // Pinecone
   PINECONE_API_KEY: getEnvVar('PINECONE_API_KEY'),
-  PINECONE_ENVIRONMENT: getEnvVar('PINECONE_ENVIRONMENT'),
+  PINECONE_ENVIRONMENT: process.env.PINECONE_ENVIRONMENT, // Optional for newer accounts
   PINECONE_INDEX_NAME: getEnvVar('PINECONE_INDEX_NAME', 'rag-fab-documents'),
 
   // AWS (optional)

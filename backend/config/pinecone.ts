@@ -13,19 +13,34 @@ export const initializePinecone = async (): Promise<Pinecone> => {
   }
 
   try {
-    logger.info('Initializing Pinecone client');
-
-    pineconeClient = new Pinecone({
-      apiKey: env.PINECONE_API_KEY,
-      environment: env.PINECONE_ENVIRONMENT
+    logger.info('Initializing Pinecone client', {
+      hasApiKey: !!env.PINECONE_API_KEY,
+      hasEnvironment: !!env.PINECONE_ENVIRONMENT,
+      indexName: env.PINECONE_INDEX_NAME
     });
+
+    // Modern Pinecone SDK (v2+) only needs apiKey
+    // Older SDK (v1) needs both apiKey and environment
+    const config: any = {
+      apiKey: env.PINECONE_API_KEY
+    };
+
+    // Only add environment if provided (for backwards compatibility)
+    if (env.PINECONE_ENVIRONMENT) {
+      config.environment = env.PINECONE_ENVIRONMENT;
+    }
+
+    pineconeClient = new Pinecone(config);
 
     logger.info('Pinecone client initialized successfully');
 
     return pineconeClient;
   } catch (error: any) {
     logger.error('Failed to initialize Pinecone client', {
-      error: error.message
+      error: error.message,
+      stack: error.stack,
+      hasApiKey: !!env.PINECONE_API_KEY,
+      hasEnvironment: !!env.PINECONE_ENVIRONMENT
     });
     throw new Error(`Failed to initialize Pinecone: ${error.message}`);
   }
