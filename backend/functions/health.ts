@@ -63,6 +63,70 @@ router.get('/sentry-test', (req: Request, res: Response): void => {
 });
 
 /**
+ * @route   GET /api/v1/health/rag-test
+ * @desc    Test RAG search functionality
+ * @access  Public
+ */
+router.get('/rag-test', async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { performRAGQuery } = require('../services/rag/rag-service');
+    const { getAvailableDocuments } = require('../services/rag/rag-service');
+
+    const testUserId = req.query.userId as string || 'test';
+    const testQuery = req.query.q as string || 'Immobilie Wohnung Preis';
+
+    logger.info('Testing RAG functionality', { testUserId, testQuery });
+
+    // Get available documents
+    const documents = await getAvailableDocuments(testUserId);
+
+    logger.info('Available documents', { count: documents.length, documents });
+
+    // Perform RAG query
+    const ragResult = await performRAGQuery({
+      query: testQuery,
+      userId: testUserId,
+      topK: 3,
+      minScore: 0.5
+    });
+
+    res.status(200).json({
+      success: true,
+      data: {
+        status: 'RAG test successful',
+        query: testQuery,
+        userId: testUserId,
+        availableDocuments: documents,
+        searchResults: {
+          totalChunks: ragResult.totalChunks,
+          relevantChunks: ragResult.relevantChunks.length,
+          chunks: ragResult.relevantChunks.map(c => ({
+            documentName: c.documentName,
+            score: c.score,
+            preview: c.content.substring(0, 100) + '...'
+          }))
+        }
+      },
+      timestamp: new Date().toISOString()
+    });
+  } catch (error: any) {
+    logger.error('RAG test failed', {
+      error: error.message,
+      stack: error.stack
+    });
+
+    res.status(500).json({
+      success: false,
+      error: {
+        message: error.message,
+        stack: error.stack
+      },
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+/**
  * @route   GET /api/v1/health/pinecone-test
  * @desc    Test Pinecone connection and configuration
  * @access  Public
