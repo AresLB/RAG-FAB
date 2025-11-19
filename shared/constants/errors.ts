@@ -72,6 +72,28 @@ export const ERROR_MESSAGES: Record<ApiErrorCode, ErrorDefinition> = {
     statusCode: HttpStatus.BAD_REQUEST
   },
 
+  // Email Integration Errors
+  [ApiErrorCode.EMAIL_PROVIDER_NOT_CONNECTED]: {
+    code: ApiErrorCode.EMAIL_PROVIDER_NOT_CONNECTED,
+    message: 'No email provider connected. Please connect Gmail or Outlook',
+    statusCode: HttpStatus.BAD_REQUEST
+  },
+  [ApiErrorCode.INVALID_EMAIL_PROVIDER]: {
+    code: ApiErrorCode.INVALID_EMAIL_PROVIDER,
+    message: 'Invalid email provider. Use "gmail" or "outlook"',
+    statusCode: HttpStatus.BAD_REQUEST
+  },
+  [ApiErrorCode.EMAIL_ID_REQUIRED]: {
+    code: ApiErrorCode.EMAIL_ID_REQUIRED,
+    message: 'Email ID is required',
+    statusCode: HttpStatus.BAD_REQUEST
+  },
+  [ApiErrorCode.EMAIL_PROVIDER_REQUIRED]: {
+    code: ApiErrorCode.EMAIL_PROVIDER_REQUIRED,
+    message: 'Email provider parameter is required (gmail or outlook)',
+    statusCode: HttpStatus.BAD_REQUEST
+  },
+
   // Subscription Errors
   [ApiErrorCode.SUBSCRIPTION_LIMIT_REACHED]: {
     code: ApiErrorCode.SUBSCRIPTION_LIMIT_REACHED,
@@ -95,6 +117,11 @@ export const ERROR_MESSAGES: Record<ApiErrorCode, ErrorDefinition> = {
   },
 
   // General Errors
+  [ApiErrorCode.BAD_REQUEST]: {
+    code: ApiErrorCode.BAD_REQUEST,
+    message: 'Bad request. Please check your input',
+    statusCode: HttpStatus.BAD_REQUEST
+  },
   [ApiErrorCode.VALIDATION_ERROR]: {
     code: ApiErrorCode.VALIDATION_ERROR,
     message: 'Validation failed. Please check your input',
