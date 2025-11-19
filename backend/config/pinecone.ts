@@ -13,34 +13,24 @@ export const initializePinecone = async (): Promise<Pinecone> => {
   }
 
   try {
-    logger.info('Initializing Pinecone client', {
+    logger.info('Initializing Pinecone client (SDK v6+)', {
       hasApiKey: !!env.PINECONE_API_KEY,
-      hasEnvironment: !!env.PINECONE_ENVIRONMENT,
       indexName: env.PINECONE_INDEX_NAME
     });
 
-    // Modern Pinecone SDK (v2+) only needs apiKey
-    // Older SDK (v1) needs both apiKey and environment
-    const config: any = {
+    // Pinecone SDK v6+ only needs apiKey (serverless-first)
+    pineconeClient = new Pinecone({
       apiKey: env.PINECONE_API_KEY
-    };
+    });
 
-    // Only add environment if provided (for backwards compatibility)
-    if (env.PINECONE_ENVIRONMENT) {
-      config.environment = env.PINECONE_ENVIRONMENT;
-    }
-
-    pineconeClient = new Pinecone(config);
-
-    logger.info('Pinecone client initialized successfully');
+    logger.info('Pinecone client initialized successfully (SDK v6)');
 
     return pineconeClient;
   } catch (error: any) {
     logger.error('Failed to initialize Pinecone client', {
       error: error.message,
       stack: error.stack,
-      hasApiKey: !!env.PINECONE_API_KEY,
-      hasEnvironment: !!env.PINECONE_ENVIRONMENT
+      hasApiKey: !!env.PINECONE_API_KEY
     });
     throw new Error(`Failed to initialize Pinecone: ${error.message}`);
   }
@@ -65,29 +55,15 @@ export const getOrCreateIndex = async (indexName: string = env.PINECONE_INDEX_NA
 
     logger.info('Checking if Pinecone index exists', { indexName });
 
-    // List existing indexes (SDK v1+ returns IndexList object with indexes array)
+    // List existing indexes (SDK v6 returns IndexList with indexes array)
     const indexList = await client.listIndexes();
     logger.info('Retrieved index list', {
-      indexList: JSON.stringify(indexList),
-      type: typeof indexList
+      indexCount: indexList?.indexes?.length || 0
     });
 
-    // Handle different response formats from Pinecone SDK
-    let indexExists = false;
-    let existingIndexes: string[] = [];
-
-    if (indexList && typeof indexList === 'object') {
-      // SDK v1+ format: { indexes: [...] }
-      if ('indexes' in indexList && Array.isArray(indexList.indexes)) {
-        existingIndexes = indexList.indexes.map((idx: any) => idx.name);
-        indexExists = existingIndexes.includes(indexName);
-      }
-      // Alternative: Array format
-      else if (Array.isArray(indexList)) {
-        existingIndexes = indexList.map((idx: any) => idx.name);
-        indexExists = existingIndexes.includes(indexName);
-      }
-    }
+    // SDK v6 format: { indexes: [{ name: string, ... }] }
+    const existingIndexes = indexList?.indexes?.map((idx: any) => idx.name) || [];
+    const indexExists = existingIndexes.includes(indexName);
 
     logger.info('Index check result', {
       indexName,
