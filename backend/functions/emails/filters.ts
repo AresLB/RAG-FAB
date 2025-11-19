@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { asyncHandler } from '../../middleware/error.middleware';
-import { IApiResponse, HttpStatus } from '../../../shared/types/api.types';
+import { IApiResponse, HttpStatus, ApiErrorCode } from '../../../shared/types/api.types';
 import { AppError } from '../../utils/errors';
 import { logger } from '../../utils/logger';
 import { getGmailLabels, GmailLabel } from '../../services/integrations/gmail-service';
@@ -24,7 +24,7 @@ export const getEmailFilters = asyncHandler(async (req: Request, res: Response):
   const { provider } = req.query; // 'gmail' or 'outlook'
 
   if (!userId) {
-    throw new AppError('Unauthorized', HttpStatus.UNAUTHORIZED);
+    throw new AppError(ApiErrorCode.UNAUTHORIZED, 'User not authenticated', HttpStatus.UNAUTHORIZED);
   }
 
   logger.info('Fetching email filters', { userId, provider });
@@ -46,7 +46,7 @@ export const getEmailFilters = asyncHandler(async (req: Request, res: Response):
       } else if (outlookToken) {
         detectedProvider = 'outlook';
       } else {
-        throw new AppError('No email provider connected', HttpStatus.BAD_REQUEST);
+        throw new AppError(ApiErrorCode.EMAIL_PROVIDER_NOT_CONNECTED, 'No email provider connected', HttpStatus.BAD_REQUEST);
       }
     }
 

@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { asyncHandler } from '../../middleware/error.middleware';
-import { IApiResponse, HttpStatus } from '../../../shared/types/api.types';
+import { IApiResponse, HttpStatus, ApiErrorCode } from '../../../shared/types/api.types';
 import { AppError } from '../../utils/errors';
 import { logger } from '../../utils/logger';
 import { generateEmailDraft, IncomingEmail, EmailDraft } from '../../services/agents/email-agent';
@@ -18,15 +18,15 @@ export const generateDraft = asyncHandler(async (req: Request, res: Response): P
   const { provider, documentIds } = req.body; // provider: 'gmail' or 'outlook', documentIds: optional array
 
   if (!userId) {
-    throw new AppError('Unauthorized', HttpStatus.UNAUTHORIZED);
+    throw new AppError(ApiErrorCode.UNAUTHORIZED, 'User not authenticated', HttpStatus.UNAUTHORIZED);
   }
 
   if (!id) {
-    throw new AppError('Email ID is required', HttpStatus.BAD_REQUEST);
+    throw new AppError(ApiErrorCode.EMAIL_ID_REQUIRED, 'Email ID is required', HttpStatus.BAD_REQUEST);
   }
 
   if (!provider || (provider !== 'gmail' && provider !== 'outlook')) {
-    throw new AppError('Provider parameter required (gmail or outlook)', HttpStatus.BAD_REQUEST);
+    throw new AppError(ApiErrorCode.EMAIL_PROVIDER_REQUIRED, 'Provider parameter required (gmail or outlook)', HttpStatus.BAD_REQUEST);
   }
 
   logger.info('Generating draft for email', { userId, emailId: id, provider });
