@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { asyncHandler } from '../../middleware/error.middleware';
-import { IApiResponse, HttpStatus } from '../../../shared/types/api.types';
+import { IApiResponse, HttpStatus, ApiErrorCode } from '../../../shared/types/api.types';
 import { AppError } from '../../utils/errors';
 import { logger } from '../../utils/logger';
 import { getFilteredGmailEmails, findGmailLabelByName } from '../../services/integrations/gmail-service';
@@ -27,7 +27,7 @@ export const listEmails = asyncHandler(async (req: Request, res: Response): Prom
   const userId = req.user?.userId;
 
   if (!userId) {
-    throw new AppError('Unauthorized', HttpStatus.UNAUTHORIZED);
+    throw new AppError(ApiErrorCode.UNAUTHORIZED, 'User not authenticated', HttpStatus.UNAUTHORIZED);
   }
 
   // Query parameters
@@ -56,7 +56,7 @@ export const listEmails = asyncHandler(async (req: Request, res: Response): Prom
       } else if (outlookToken) {
         targetProvider = 'outlook';
       } else {
-        throw new AppError('No email provider connected. Please connect Gmail or Outlook.', HttpStatus.BAD_REQUEST);
+        throw new AppError(ApiErrorCode.EMAIL_PROVIDER_NOT_CONNECTED, 'No email provider connected. Please connect Gmail or Outlook.', HttpStatus.BAD_REQUEST);
       }
     }
 
@@ -118,7 +118,7 @@ export const listEmails = asyncHandler(async (req: Request, res: Response): Prom
         provider: 'outlook' as const
       }));
     } else {
-      throw new AppError('Invalid provider. Use "gmail" or "outlook".', HttpStatus.BAD_REQUEST);
+      throw new AppError(ApiErrorCode.INVALID_EMAIL_PROVIDER, 'Invalid provider. Use "gmail" or "outlook".', HttpStatus.BAD_REQUEST);
     }
 
     const response: IApiResponse<EmailListItem[]> = {

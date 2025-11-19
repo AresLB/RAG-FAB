@@ -126,3 +126,8 @@ export const optionalAuthenticate = async (
     next();
   }
 };
+
+/**
+ * Alias for authenticate middleware (for backwards compatibility)
+ */
+export const authMiddleware = authenticate;

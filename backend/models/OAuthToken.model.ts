@@ -13,7 +13,10 @@ export interface IOAuthToken {
   updatedAt: Date;
 }
 
-export interface IOAuthTokenDocument extends Omit<IOAuthToken, '_id'>, MongooseDocument {}
+export interface IOAuthTokenDocument extends Omit<IOAuthToken, '_id'>, MongooseDocument {
+  isExpired(): boolean;
+  needsRefresh(): boolean;
+}
 
 const oauthTokenSchema = new Schema<IOAuthTokenDocument>(
   {

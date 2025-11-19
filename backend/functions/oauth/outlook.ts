@@ -154,7 +154,8 @@ router.get(
           userId: user.id,
           provider: 'microsoft',
           accessToken: response.accessToken,
-          refreshToken: response.refreshToken,
+          // MSAL handles refresh tokens automatically via token cache
+          // refreshToken is not exposed in AuthenticationResult
           expiresAt,
           scope: response.scopes || [],
           email

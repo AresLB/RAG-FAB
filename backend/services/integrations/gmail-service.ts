@@ -1,4 +1,4 @@
-import { google } from 'googleapis';
+import { google, Auth } from 'googleapis';
 import { logger } from '../../utils/logger';
 import { IncomingEmail } from '../agents/email-agent';
 import { OAuthToken } from '../../models/OAuthToken.model';
@@ -200,7 +200,7 @@ export async function createGmailDraft(
 /**
  * Get user's OAuth tokens from database and refresh if needed
  */
-async function getGmailAuth(userId: string): Promise<google.auth.OAuth2Client> {
+async function getGmailAuth(userId: string): Promise<Auth.OAuth2Client> {
   const tokenDoc = await OAuthToken.findOne({ userId, provider: 'google' }).select('+accessToken +refreshToken');
 
   if (!tokenDoc) {
