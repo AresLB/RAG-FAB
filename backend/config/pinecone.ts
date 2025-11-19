@@ -65,10 +65,35 @@ export const getOrCreateIndex = async (indexName: string = env.PINECONE_INDEX_NA
 
     logger.info('Checking if Pinecone index exists', { indexName });
 
-    // List existing indexes
-    const indexesList = await client.listIndexes();
-    const indexNames = indexesList.map((index: any) => index.name);
-    const indexExists = indexNames.includes(indexName);
+    // List existing indexes (SDK v1+ returns IndexList object with indexes array)
+    const indexList = await client.listIndexes();
+    logger.info('Retrieved index list', {
+      indexList: JSON.stringify(indexList),
+      type: typeof indexList
+    });
+
+    // Handle different response formats from Pinecone SDK
+    let indexExists = false;
+    let existingIndexes: string[] = [];
+
+    if (indexList && typeof indexList === 'object') {
+      // SDK v1+ format: { indexes: [...] }
+      if ('indexes' in indexList && Array.isArray(indexList.indexes)) {
+        existingIndexes = indexList.indexes.map((idx: any) => idx.name);
+        indexExists = existingIndexes.includes(indexName);
+      }
+      // Alternative: Array format
+      else if (Array.isArray(indexList)) {
+        existingIndexes = indexList.map((idx: any) => idx.name);
+        indexExists = existingIndexes.includes(indexName);
+      }
+    }
+
+    logger.info('Index check result', {
+      indexName,
+      indexExists,
+      existingIndexes
+    });
 
     if (indexExists) {
       logger.info('Pinecone index exists', { indexName });
@@ -78,10 +103,17 @@ export const getOrCreateIndex = async (indexName: string = env.PINECONE_INDEX_NA
     // Create index if it doesn't exist
     logger.info('Creating Pinecone index', { indexName });
 
+    // SDK v1+ requires spec object
     await client.createIndex({
       name: indexName,
       dimension: 1536, // text-embedding-3-small dimension
-      metric: 'cosine'
+      metric: 'cosine',
+      spec: {
+        serverless: {
+          cloud: 'aws',
+          region: 'us-east-1'
+        }
+      }
     });
 
     logger.info('Waiting for index to be ready', { indexName });
@@ -89,16 +121,28 @@ export const getOrCreateIndex = async (indexName: string = env.PINECONE_INDEX_NA
     // Wait for index to be ready
     let isReady = false;
     let attempts = 0;
-    const maxAttempts = 30;
+    const maxAttempts = 60; // Increased to 2 minutes
 
     while (!isReady && attempts < maxAttempts) {
-      const description = await client.describeIndex(indexName);
-      isReady = description.status?.ready ?? false;
+      try {
+        const description = await client.describeIndex(indexName);
+        isReady = description.status?.ready ?? false;
 
-      if (!isReady) {
-        logger.debug('Index not ready yet, waiting...', {
+        logger.debug('Index status check', {
           attempt: attempts + 1,
-          maxAttempts
+          maxAttempts,
+          isReady,
+          status: description.status
+        });
+
+        if (!isReady) {
+          await new Promise((resolve) => setTimeout(resolve, 2000));
+          attempts++;
+        }
+      } catch (describeError: any) {
+        logger.warn('Error checking index status', {
+          attempt: attempts + 1,
+          error: describeError.message
         });
         await new Promise((resolve) => setTimeout(resolve, 2000));
         attempts++;
@@ -106,7 +150,7 @@ export const getOrCreateIndex = async (indexName: string = env.PINECONE_INDEX_NA
     }
 
     if (!isReady) {
-      throw new Error('Index creation timed out');
+      throw new Error('Index creation timed out after 2 minutes');
     }
 
     logger.info('Pinecone index created successfully', { indexName });
@@ -115,6 +159,7 @@ export const getOrCreateIndex = async (indexName: string = env.PINECONE_INDEX_NA
   } catch (error: any) {
     logger.error('Failed to get or create Pinecone index', {
       error: error.message,
+      stack: error.stack,
       indexName
     });
     throw new Error(`Failed to get or create index: ${error.message}`);
