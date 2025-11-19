@@ -59,4 +59,44 @@ export function initializeSentry() {
   console.log('✅ Sentry initialized for', env.NODE_ENV);
 }
 
+// Custom Express middleware for Sentry v8 (replaces Handlers.requestHandler)
+export function sentryRequestMiddleware(req: any, res: any, next: any) {
+  // Add request context to Sentry scope
+  Sentry.setContext('request', {
+    url: req.url,
+    method: req.method,
+    headers: {
+      'user-agent': req.headers['user-agent'],
+    },
+  });
+
+  // Set user context if available
+  if (req.user) {
+    Sentry.setUser({
+      id: req.user.userId,
+      // Don't include email for privacy
+    });
+  }
+
+  next();
+}
+
+// Custom Express error handler for Sentry v8 (replaces Handlers.errorHandler)
+export function sentryErrorMiddleware(err: any, req: any, res: any, next: any) {
+  // Capture exception in Sentry
+  Sentry.captureException(err, {
+    contexts: {
+      request: {
+        url: req.url,
+        method: req.method,
+        query: req.query,
+        body: req.body,
+      },
+    },
+  });
+
+  // Pass to next error handler
+  next(err);
+}
+
 export { Sentry };
