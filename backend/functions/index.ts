@@ -7,7 +7,7 @@ import { logger, stream } from '../utils/logger';
 import { errorHandler, notFoundHandler } from '../middleware/error.middleware';
 import { generalLimiter } from '../middleware/rate-limit.middleware';
 import { ensureDatabaseConnection } from '../middleware/database.middleware';
-import { initializeSentry, Sentry } from '../config/sentry';
+import { initializeSentry, Sentry, sentryRequestMiddleware, sentryErrorMiddleware } from '../config/sentry';
 
 // Import routes
 import authRoutes from './auth';
@@ -27,10 +27,8 @@ const createApp = (): Application => {
 
   const app = express();
 
-  // Sentry request handler must be the FIRST middleware
-  app.use(Sentry.Handlers.requestHandler());
-  // Sentry tracing middleware (optional, for performance monitoring)
-  app.use(Sentry.Handlers.tracingHandler());
+  // Sentry request middleware must be the FIRST middleware
+  app.use(sentryRequestMiddleware);
 
   // Trust proxy - required for Vercel (behind reverse proxy)
   app.set('trust proxy', 1);
@@ -76,7 +74,7 @@ const createApp = (): Application => {
   app.use(notFoundHandler);
 
   // Sentry error handler (MUST be before other error handlers)
-  app.use(Sentry.Handlers.errorHandler());
+  app.use(sentryErrorMiddleware);
 
   // Custom error handler (must be last)
   app.use(errorHandler);
