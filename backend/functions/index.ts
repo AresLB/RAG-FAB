@@ -7,6 +7,7 @@ import { logger, stream } from '../utils/logger';
 import { errorHandler, notFoundHandler } from '../middleware/error.middleware';
 import { generalLimiter } from '../middleware/rate-limit.middleware';
 import { ensureDatabaseConnection } from '../middleware/database.middleware';
+import { initializeSentry, Sentry } from '../config/sentry';
 
 // Import routes
 import authRoutes from './auth';
@@ -21,7 +22,15 @@ import emailRoutes from './emails';
  * Create Express application
  */
 const createApp = (): Application => {
+  // Initialize Sentry FIRST (before any middleware)
+  initializeSentry();
+
   const app = express();
+
+  // Sentry request handler must be the FIRST middleware
+  app.use(Sentry.Handlers.requestHandler());
+  // Sentry tracing middleware (optional, for performance monitoring)
+  app.use(Sentry.Handlers.tracingHandler());
 
   // Trust proxy - required for Vercel (behind reverse proxy)
   app.set('trust proxy', 1);
@@ -66,7 +75,10 @@ const createApp = (): Application => {
   // 404 handler
   app.use(notFoundHandler);
 
-  // Error handler (must be last)
+  // Sentry error handler (MUST be before other error handlers)
+  app.use(Sentry.Handlers.errorHandler());
+
+  // Custom error handler (must be last)
   app.use(errorHandler);
 
   return app;
@@ -109,12 +121,14 @@ const startServer = async (): Promise<void> => {
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (reason: Error) => {
   logger.error('Unhandled Promise Rejection:', reason);
+  Sentry.captureException(reason);
   process.exit(1);
 });
 
 // Handle uncaught exceptions
 process.on('uncaughtException', (error: Error) => {
   logger.error('Uncaught Exception:', error);
+  Sentry.captureException(error);
   process.exit(1);
 });
 

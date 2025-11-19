@@ -45,6 +45,9 @@ interface EnvironmentConfig {
   // Rate Limiting
   RATE_LIMIT_WINDOW_MS: number;
   RATE_LIMIT_MAX_REQUESTS: number;
+
+  // Monitoring
+  SENTRY_DSN?: string;
 }
 
 const getEnvVar = (key: string, defaultValue?: string): string => {
@@ -108,7 +111,10 @@ export const env: EnvironmentConfig = {
 
   // Rate Limiting
   RATE_LIMIT_WINDOW_MS: getEnvNumber('RATE_LIMIT_WINDOW_MS', 15 * 60 * 1000), // 15 minutes
-  RATE_LIMIT_MAX_REQUESTS: getEnvNumber('RATE_LIMIT_MAX_REQUESTS', 100)
+  RATE_LIMIT_MAX_REQUESTS: getEnvNumber('RATE_LIMIT_MAX_REQUESTS', 100),
+
+  // Monitoring
+  SENTRY_DSN: process.env.SENTRY_DSN
 };
 
 // Validate critical environment variables in production
