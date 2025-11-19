@@ -23,6 +23,19 @@ interface EmailDetail {
   threadId?: string;
 }
 
+interface EmailDraft {
+  to: string;
+  subject: string;
+  body: string;
+  confidence: number;
+  sources: Array<{
+    documentName: string;
+    excerpt: string;
+    relevance: number;
+  }>;
+  warnings?: string[];
+}
+
 interface EmailFilter {
   id: string;
   name: string;
@@ -35,10 +48,13 @@ export default function EmailPage() {
   const [filters, setFilters] = useState<EmailFilter[]>([]);
   const [selectedFilter, setSelectedFilter] = useState<string>('');
   const [selectedEmail, setSelectedEmail] = useState<EmailDetail | null>(null);
+  const [selectedEmailProvider, setSelectedEmailProvider] = useState<'gmail' | 'outlook' | null>(null);
+  const [draft, setDraft] = useState<EmailDraft | null>(null);
   const [provider, setProvider] = useState<'gmail' | 'outlook' | null>(null);
   const [isLoadingEmails, setIsLoadingEmails] = useState(false);
   const [isLoadingFilters, setIsLoadingFilters] = useState(false);
   const [isLoadingDetail, setIsLoadingDetail] = useState(false);
+  const [isGeneratingDraft, setIsGeneratingDraft] = useState(false);
   const [error, setError] = useState('');
   const [showFilterSetup, setShowFilterSetup] = useState(false);
 
@@ -123,17 +139,46 @@ export default function EmailPage() {
     try {
       setIsLoadingDetail(true);
       setError('');
+      setDraft(null); // Reset draft when selecting new email
 
       const response = await api.get(`/emails/${email.id}`, {
         params: { provider: email.provider }
       });
 
       setSelectedEmail(response.data.data);
+      setSelectedEmailProvider(email.provider);
     } catch (err: any) {
       console.error('Failed to load email detail:', err);
       setError(err.response?.data?.message || 'Fehler beim Laden der Email-Details');
     } finally {
       setIsLoadingDetail(false);
+    }
+  };
+
+  const generateDraftForEmail = async () => {
+    if (!selectedEmail || !selectedEmailProvider) return;
+
+    try {
+      setIsGeneratingDraft(true);
+      setError('');
+
+      const response = await api.post(`/emails/${selectedEmail.id}/generate-draft`, {
+        provider: selectedEmailProvider
+      });
+
+      setDraft(response.data.data);
+    } catch (err: any) {
+      console.error('Failed to generate draft:', err);
+      setError(err.response?.data?.message || 'Fehler beim Generieren des Entwurfs');
+    } finally {
+      setIsGeneratingDraft(false);
+    }
+  };
+
+  const copyDraftToClipboard = () => {
+    if (draft) {
+      navigator.clipboard.writeText(draft.body);
+      alert('Entwurf wurde in die Zwischenablage kopiert!');
     }
   };
 
@@ -422,17 +467,165 @@ export default function EmailPage() {
                     </div>
                   </div>
 
-                  <div className="mt-6 pt-6 border-t border-slate-200">
-                    <button
-                      onClick={() => alert('Draft-Generierung kommt in Phase 3!')}
-                      className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
-                    >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                      </svg>
-                      Antwort-Entwurf generieren
-                    </button>
-                  </div>
+                  {/* Draft Generator */}
+                  {!draft && (
+                    <div className="mt-6 pt-6 border-t border-slate-200">
+                      <button
+                        onClick={generateDraftForEmail}
+                        disabled={isGeneratingDraft}
+                        className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {isGeneratingDraft ? (
+                          <>
+                            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                            AI generiert Antwort...
+                          </>
+                        ) : (
+                          <>
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            </svg>
+                            Antwort-Entwurf generieren
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Generated Draft */}
+                  {draft && (
+                    <div className="mt-6 pt-6 border-t border-slate-200 space-y-4">
+                      <div className="flex items-center justify-between">
+                        <h4 className="font-semibold text-slate-900">AI-Generierter Entwurf</h4>
+                        <button
+                          onClick={() => setDraft(null)}
+                          className="text-sm text-slate-600 hover:text-slate-900"
+                        >
+                          Neu generieren
+                        </button>
+                      </div>
+
+                      {/* Confidence Score */}
+                      <div className="bg-slate-50 rounded-lg p-4">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-sm font-medium text-slate-700">
+                            Confidence Score
+                          </span>
+                          <span className={`text-sm font-bold ${
+                            draft.confidence >= 0.7 ? 'text-green-600' :
+                            draft.confidence >= 0.5 ? 'text-yellow-600' :
+                            'text-red-600'
+                          }`}>
+                            {Math.round(draft.confidence * 100)}%
+                          </span>
+                        </div>
+                        <div className="h-2 bg-slate-200 rounded-full overflow-hidden">
+                          <div
+                            className={`h-full transition-all ${
+                              draft.confidence >= 0.7 ? 'bg-green-600' :
+                              draft.confidence >= 0.5 ? 'bg-yellow-600' :
+                              'bg-red-600'
+                            }`}
+                            style={{ width: `${draft.confidence * 100}%` }}
+                          ></div>
+                        </div>
+                      </div>
+
+                      {/* Warnings */}
+                      {draft.warnings && draft.warnings.length > 0 && (
+                        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                          <div className="flex items-start gap-2">
+                            <svg className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                            <div className="flex-1">
+                              <p className="text-sm font-medium text-yellow-900 mb-1">Hinweise</p>
+                              <ul className="text-sm text-yellow-800 space-y-1">
+                                {draft.warnings.map((warning, idx) => (
+                                  <li key={idx}>• {warning}</li>
+                                ))}
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Draft Body */}
+                      <div className="space-y-3">
+                        <div>
+                          <label className="text-xs font-semibold text-slate-600 uppercase block mb-1">
+                            An
+                          </label>
+                          <p className="text-slate-900">{draft.to}</p>
+                        </div>
+                        <div>
+                          <label className="text-xs font-semibold text-slate-600 uppercase block mb-1">
+                            Betreff
+                          </label>
+                          <p className="text-slate-900">{draft.subject}</p>
+                        </div>
+                        <div>
+                          <label className="text-xs font-semibold text-slate-600 uppercase block mb-2">
+                            Nachricht
+                          </label>
+                          <div className="bg-white border border-slate-200 rounded-lg p-4 whitespace-pre-wrap text-slate-900">
+                            {draft.body}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Sources Used */}
+                      {draft.sources && draft.sources.length > 0 && (
+                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                          <div className="flex items-start gap-2">
+                            <svg className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            <div className="flex-1">
+                              <p className="text-sm font-medium text-blue-900 mb-2">
+                                Verwendete Dokumente ({draft.sources.length})
+                              </p>
+                              <div className="space-y-2">
+                                {draft.sources.map((source, idx) => (
+                                  <div key={idx} className="text-sm">
+                                    <p className="font-medium text-blue-900">{source.documentName}</p>
+                                    <p className="text-xs text-blue-700 italic mt-1">
+                                      &quot;{source.excerpt}&quot;
+                                    </p>
+                                    <p className="text-xs text-blue-600 mt-1">
+                                      Relevanz: {Math.round(source.relevance * 100)}%
+                                    </p>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Action Buttons */}
+                      <div className="flex gap-3">
+                        <button
+                          onClick={copyDraftToClipboard}
+                          className="flex-1 flex items-center justify-center gap-2 px-4 py-3 border-2 border-blue-600 bg-white text-blue-600 font-medium rounded-lg hover:bg-blue-50 transition-colors"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                          </svg>
+                          Kopieren
+                        </button>
+                        <button
+                          onClick={() => alert('Email-Versand-Funktion kommt bald!')}
+                          className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                          </svg>
+                          Als Entwurf speichern
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             )}

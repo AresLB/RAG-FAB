@@ -3,6 +3,7 @@ import { authMiddleware } from '../../middleware/auth.middleware';
 import { listEmails } from './list';
 import { getEmailById } from './get';
 import { getEmailFilters } from './filters';
+import { generateDraft } from './generate-draft';
 
 const router = Router();
 
@@ -35,5 +36,14 @@ router.get('/filters', getEmailFilters);
  * @query provider - 'gmail' or 'outlook' (required)
  */
 router.get('/:id', getEmailById);
+
+/**
+ * @route POST /api/v1/emails/:id/generate-draft
+ * @desc Generate AI draft reply for email
+ * @access Private
+ * @body provider - 'gmail' or 'outlook' (required)
+ * @body documentIds - Array of document IDs to use (optional)
+ */
+router.post('/:id/generate-draft', generateDraft);
 
 export default router;
