@@ -146,7 +146,7 @@ export async function generateEmailDraft(
       userId,
       documentIds,
       topK: 5,
-      minScore: 0.6
+      minScore: 0.5
     });
 
     // Calculate confidence based on RAG results
