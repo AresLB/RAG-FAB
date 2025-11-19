@@ -50,4 +50,14 @@ router.get('/', (req: Request, res: Response): void => {
   res.status(statusCode).json(response);
 });
 
+/**
+ * @route   GET /api/v1/health/sentry-test
+ * @desc    Test Sentry error tracking
+ * @access  Public
+ */
+router.get('/sentry-test', (req: Request, res: Response): void => {
+  // This will trigger Sentry
+  throw new Error('🧪 Sentry Test Error - If you see this in Sentry, it works!');
+});
+
 export default router;
