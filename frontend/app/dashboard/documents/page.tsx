@@ -45,7 +45,7 @@ export default function DocumentsPage() {
     try {
       if (!isLoading) setIsLoading(false); // Only show loader on initial load
       const response = await api.get('/documents');
-      setDocuments(response.data.data.documents || []);
+      setDocuments(response.data.data || []);
     } catch (err: any) {
       console.error('Failed to fetch documents:', err);
       if (isLoading) {
