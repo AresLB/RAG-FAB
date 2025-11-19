@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import { google } from 'googleapis';
 import { env } from '../../config/env';
 import { User } from '../../models/User.model';
+import { OAuthToken } from '../../models/OAuthToken.model';
 import { generateTokenPair } from '../../utils/jwt';
 import { asyncHandler } from '../../middleware/error.middleware';
 import { logger } from '../../utils/logger';
@@ -110,8 +111,26 @@ router.get(
         console.log('✅ Existing user found:', user.id);
       }
 
-      // Store OAuth tokens in user profile (optional)
-      // You might want to create a separate OAuthTokens model
+      // Store OAuth tokens for Gmail API access
+      console.log('🔄 Storing OAuth tokens...');
+      const expiresAt = tokens.expiry_date
+        ? new Date(tokens.expiry_date)
+        : new Date(Date.now() + 3600 * 1000); // Default 1 hour
+
+      await OAuthToken.findOneAndUpdate(
+        { userId: user.id, provider: 'google' },
+        {
+          userId: user.id,
+          provider: 'google',
+          accessToken: tokens.access_token!,
+          refreshToken: tokens.refresh_token,
+          expiresAt,
+          scope: tokens.scope?.split(' ') || [],
+          email: data.email
+        },
+        { upsert: true, new: true }
+      );
+      console.log('✅ OAuth tokens stored');
 
       // Generate JWT tokens
       console.log('🔄 Generating JWT tokens...');

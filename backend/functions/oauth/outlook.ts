@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import { ConfidentialClientApplication } from '@azure/msal-node';
 import { env } from '../../config/env';
 import { User } from '../../models/User.model';
+import { OAuthToken } from '../../models/OAuthToken.model';
 import { generateTokenPair } from '../../utils/jwt';
 import { asyncHandler } from '../../middleware/error.middleware';
 import { logger } from '../../utils/logger';
@@ -141,8 +142,26 @@ router.get(
         console.log('✅ Existing user found:', user.id);
       }
 
-      // Store OAuth tokens in user profile (optional)
-      // You might want to create a separate OAuthTokens model
+      // Store OAuth tokens for Outlook API access
+      console.log('🔄 Storing OAuth tokens...');
+      const expiresAt = response.expiresOn
+        ? new Date(response.expiresOn)
+        : new Date(Date.now() + 3600 * 1000); // Default 1 hour
+
+      await OAuthToken.findOneAndUpdate(
+        { userId: user.id, provider: 'microsoft' },
+        {
+          userId: user.id,
+          provider: 'microsoft',
+          accessToken: response.accessToken,
+          refreshToken: response.refreshToken,
+          expiresAt,
+          scope: response.scopes || [],
+          email
+        },
+        { upsert: true, new: true }
+      );
+      console.log('✅ OAuth tokens stored');
 
       // Generate JWT tokens
       console.log('🔄 Generating JWT tokens...');
