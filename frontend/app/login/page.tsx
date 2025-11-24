@@ -29,32 +29,34 @@ function LoginContent() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-zinc-950 flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
         {/* Logo/Header */}
         <div className="text-center mb-8">
-          <Link href="/" className="inline-block">
-            <h1 className="text-3xl font-bold text-slate-900">Responobis</h1>
+          <Link href="/" className="inline-block group">
+            <h1 className="text-3xl font-bold text-zinc-100 group-hover:text-white transition-colors">
+              Responobis
+            </h1>
           </Link>
-          <p className="mt-2 text-slate-600">
-            Melden Sie sich an mit Ihrem Email-Konto
+          <p className="mt-3 text-zinc-400">
+            Sign in to your account
           </p>
         </div>
 
         {/* Error Message */}
         {error && (
-          <div className="mb-6 rounded-lg bg-red-50 border border-red-200 p-4">
-            <p className="text-sm font-semibold text-red-800 mb-2">
-              {error === 'oauth_failed' && 'Anmeldung fehlgeschlagen'}
-              {error === 'no_email' && 'Keine Email-Adresse gefunden'}
-              {error === 'no_account' && 'Konto nicht gefunden'}
+          <div className="mb-6 rounded-lg bg-red-950/50 border border-red-800/50 p-4">
+            <p className="text-sm font-semibold text-red-400 mb-2">
+              {error === 'oauth_failed' && 'Authentication failed'}
+              {error === 'no_email' && 'No email address found'}
+              {error === 'no_account' && 'Account not found'}
             </p>
             {parsedError && (
               <details className="mt-2">
-                <summary className="text-xs text-red-700 cursor-pointer hover:text-red-900">
-                  🔍 Technische Details anzeigen
+                <summary className="text-xs text-red-400/80 cursor-pointer hover:text-red-400">
+                  View technical details
                 </summary>
-                <div className="mt-2 p-2 bg-red-100 rounded text-xs font-mono text-red-900 overflow-auto max-h-40">
+                <div className="mt-2 p-3 bg-red-950/80 rounded border border-red-800/30 text-xs font-mono text-red-300 overflow-auto max-h-40">
                   <p><strong>Error:</strong> {parsedError.name}</p>
                   <p><strong>Message:</strong> {parsedError.message}</p>
                   {parsedError.stack && (
@@ -70,12 +72,15 @@ function LoginContent() {
         )}
 
         {/* Login Card */}
-        <div className="bg-white rounded-lg shadow-lg p-8">
+        <div className="relative rounded-2xl border border-zinc-800 bg-zinc-900/50 backdrop-blur-xl p-8">
+          {/* Gradient glow effect */}
+          <div className="absolute inset-0 -z-10 bg-gradient-to-r from-violet-500/5 to-cyan-500/5 blur-xl rounded-2xl"></div>
+
           <div className="space-y-4">
             {/* Gmail Login Button */}
             <button
               onClick={handleGmailLogin}
-              className="w-full flex items-center justify-center gap-3 rounded-lg border-2 border-slate-200 bg-white px-6 py-3 font-semibold text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-colors"
+              className="w-full flex items-center justify-center gap-3 rounded-lg border border-zinc-700 bg-zinc-800/50 px-6 py-3.5 font-semibold text-zinc-100 hover:bg-zinc-700/50 hover:border-zinc-600 transition-all"
             >
               <svg className="h-5 w-5" viewBox="0 0 24 24">
                 <path
@@ -95,13 +100,13 @@ function LoginContent() {
                   d="M5.277 14.268A7.12 7.12 0 0 1 4.909 12c0-.782.125-1.533.357-2.235L1.24 6.65A11.934 11.934 0 0 0 0 12c0 1.92.445 3.73 1.237 5.335l4.04-3.067Z"
                 />
               </svg>
-              Mit Gmail anmelden
+              Continue with Gmail
             </button>
 
             {/* Outlook Login Button */}
             <button
               onClick={handleOutlookLogin}
-              className="w-full flex items-center justify-center gap-3 rounded-lg border-2 border-slate-200 bg-white px-6 py-3 font-semibold text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-colors"
+              className="w-full flex items-center justify-center gap-3 rounded-lg border border-zinc-700 bg-zinc-800/50 px-6 py-3.5 font-semibold text-zinc-100 hover:bg-zinc-700/50 hover:border-zinc-600 transition-all"
             >
               <svg className="h-5 w-5" viewBox="0 0 24 24">
                 <path
@@ -109,44 +114,57 @@ function LoginContent() {
                   d="M24 7.387v9.226c0 1.75-1.42 3.17-3.17 3.17h-2.53v-8.24h2.53c.35 0 .69-.06 1-.17V7.387c-.31-.11-.65-.17-1-.17h-2.53V3.83c0-.35-.06-.69-.17-1h2.7c1.75 0 3.17 1.42 3.17 3.17v1.387zm-6.7-4.557v4.557h-6.7V2.83c0-.35.06-.69.17-1h6.53c-.11.31-.17.65-.17 1zm-6.7 4.557v8.24H3.17c-1.75 0-3.17-1.42-3.17-3.17V7.387c0-.35.06-.69.17-1h10.43zm6.7 8.24v4.557c0 .35-.06.69-.17 1H3.17c.11-.31.17-.65.17-1v-4.557h13.96z"
                 />
               </svg>
-              Mit Outlook anmelden
+              Continue with Outlook
             </button>
           </div>
 
           {/* Divider */}
-          <div className="my-6 flex items-center">
-            <div className="flex-1 border-t border-slate-200"></div>
-            <span className="px-4 text-sm text-slate-500">oder</span>
-            <div className="flex-1 border-t border-slate-200"></div>
+          <div className="my-8 flex items-center">
+            <div className="flex-1 border-t border-zinc-800"></div>
+            <span className="px-4 text-sm text-zinc-500">or</span>
+            <div className="flex-1 border-t border-zinc-800"></div>
           </div>
 
-          {/* Email/Password Form (Optional - can be implemented later) */}
-          <div className="text-center">
-            <p className="text-sm text-slate-600">
-              Email & Passwort Anmeldung folgt in Kürze
+          {/* Coming Soon */}
+          <div className="text-center p-4 rounded-lg bg-zinc-800/30 border border-zinc-800">
+            <p className="text-sm text-zinc-400">
+              Email & password sign in coming soon
             </p>
           </div>
         </div>
 
+        {/* Privacy Badge */}
+        <div className="mt-6 p-4 rounded-lg border border-zinc-800/50 bg-zinc-900/30 text-center">
+          <div className="flex items-center justify-center gap-2 text-sm text-zinc-400">
+            <svg className="w-4 h-4 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            </svg>
+            <span>Your data stays private and secure</span>
+          </div>
+        </div>
+
         {/* Terms */}
-        <p className="mt-6 text-center text-xs text-slate-500">
-          Mit der Anmeldung akzeptieren Sie unsere{' '}
-          <a href="#" className="underline hover:text-slate-700">
-            Nutzungsbedingungen
+        <p className="mt-6 text-center text-xs text-zinc-500">
+          By signing in, you agree to our{' '}
+          <a href="#" className="text-zinc-400 hover:text-zinc-100 transition-colors underline">
+            Terms of Service
           </a>{' '}
-          und{' '}
-          <a href="#" className="underline hover:text-slate-700">
-            Datenschutzrichtlinien
+          and{' '}
+          <a href="#" className="text-zinc-400 hover:text-zinc-100 transition-colors underline">
+            Privacy Policy
           </a>
         </p>
 
         {/* Back to Home */}
-        <div className="mt-6 text-center">
+        <div className="mt-8 text-center">
           <Link
             href="/"
-            className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+            className="inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-zinc-100 transition-colors group"
           >
-            ← Zurück zur Startseite
+            <svg className="w-4 h-4 group-hover:-translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Back to home
           </Link>
         </div>
       </div>
@@ -158,10 +176,11 @@ export default function LoginPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 flex items-center justify-center px-4">
+        <div className="min-h-screen bg-zinc-950 flex items-center justify-center px-4">
           <div className="w-full max-w-md">
-            <div className="bg-white rounded-lg shadow-lg p-8 text-center">
-              <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent"></div>
+            <div className="relative rounded-2xl border border-zinc-800 bg-zinc-900/50 p-8 text-center">
+              <div className="inline-block h-10 w-10 animate-spin rounded-full border-4 border-solid border-violet-500 border-r-transparent"></div>
+              <p className="mt-4 text-sm text-zinc-400">Loading...</p>
             </div>
           </div>
         </div>

@@ -304,9 +304,9 @@ export default function DocumentsPage() {
     <div className="max-w-6xl mx-auto">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-slate-900 mb-2">Dokumente</h1>
-        <p className="text-slate-600">
-          Laden Sie Ihre Wissensdatenbank hoch - PDF, DOCX, TXT oder MD Dateien
+        <h1 className="text-3xl font-bold text-zinc-100 mb-2">Documents</h1>
+        <p className="text-zinc-400">
+          Upload your knowledge base - PDF, DOCX, TXT or MD files
         </p>
       </div>
 
@@ -314,10 +314,10 @@ export default function DocumentsPage() {
       <div
         className={`relative mb-8 rounded-xl border-2 border-dashed transition-all ${
           isDragging
-            ? 'border-blue-500 bg-blue-50'
+            ? 'border-violet-500 bg-violet-950/20'
             : isUploading
-            ? 'border-blue-400 bg-blue-50'
-            : 'border-slate-300 bg-gradient-to-br from-slate-50 to-slate-100 hover:border-blue-400 hover:from-blue-50 hover:to-indigo-50'
+            ? 'border-violet-400 bg-violet-950/20'
+            : 'border-zinc-700 bg-zinc-900/50 hover:border-violet-500/50 hover:bg-zinc-800/50'
         }`}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
@@ -380,15 +380,15 @@ export default function DocumentsPage() {
                 </div>
               </div>
               <div>
-                <p className="text-lg font-medium text-slate-900 mb-2">
-                  {isDragging ? 'Datei hier ablegen...' : 'Dokument hochladen'}
+                <p className="text-lg font-medium text-zinc-100 mb-2">
+                  {isDragging ? 'Drop file here...' : 'Upload document'}
                 </p>
-                <p className="text-sm text-slate-600 mb-4">
-                  Ziehen Sie eine Datei hierher oder klicken Sie zum Auswählen
+                <p className="text-sm text-zinc-400 mb-4">
+                  Drag and drop a file here or click to select
                 </p>
                 <button
                   onClick={() => fileInputRef.current?.click()}
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all shadow-sm hover:shadow-md"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-gradient-to-r from-violet-500 to-cyan-500 text-white font-semibold hover:from-violet-600 hover:to-cyan-600 transition-all shadow-sm hover:shadow-md"
                 >
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24">
                     <path
@@ -399,10 +399,10 @@ export default function DocumentsPage() {
                       d="M12 4v16m8-8H4"
                     />
                   </svg>
-                  Datei auswählen
+                  Select file
                 </button>
-                <p className="text-xs text-slate-500 mt-3">
-                  Unterstützte Formate: PDF, DOCX, TXT, MD (max. 10MB)
+                <p className="text-xs text-zinc-500 mt-3">
+                  Supported formats: PDF, DOCX, TXT, MD (max. 10MB)
                 </p>
               </div>
             </div>
@@ -448,10 +448,10 @@ export default function DocumentsPage() {
       )}
 
       {/* Documents List */}
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
-        <div className="px-6 py-4 border-b border-slate-200 bg-slate-50">
-          <h2 className="text-lg font-semibold text-slate-900">
-            Ihre Dokumente ({documents.length})
+      <div className="bg-zinc-900/50 rounded-xl border border-zinc-800 overflow-hidden shadow-sm">
+        <div className="px-6 py-4 border-b border-zinc-800 bg-zinc-800/50">
+          <h2 className="text-lg font-semibold text-zinc-100">
+            Your Documents ({documents.length})
           </h2>
         </div>
 
@@ -478,13 +478,13 @@ export default function DocumentsPage() {
                 />
               </svg>
             </div>
-            <h3 className="text-lg font-medium text-slate-900 mb-2">Noch keine Dokumente</h3>
-            <p className="text-slate-600 mb-4">
-              Laden Sie Ihr erstes Dokument hoch, um mit der RAG-basierten Email-Beantwortung zu starten
+            <h3 className="text-lg font-medium text-zinc-100 mb-2">No documents yet</h3>
+            <p className="text-zinc-400 mb-4">
+              Upload your first document to start with RAG-based email responses
             </p>
             <button
               onClick={() => fileInputRef.current?.click()}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-violet-500 to-cyan-500 text-white font-medium hover:from-violet-600 hover:to-cyan-600 transition-all"
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24">
                 <path
