@@ -10,7 +10,7 @@ interface LanguageContextType {
   t: (key: string) => string;
 }
 
-const translations = {
+const translations: Record<Language, Record<string, string>> = {
   de: {
     // Navigation
     'nav.features': 'Features',
