@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 export default function DashboardLayout({
   children,
@@ -58,9 +59,10 @@ export default function DashboardLayout({
               </Link>
             </div>
             <div className="flex items-center gap-4">
+              <ThemeToggle />
               <button
                 onClick={handleLogout}
-                className="rounded-lg px-4 py-2 text-sm font-medium text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/50 transition-colors"
+                className="rounded-lg px-4 py-2 text-sm font-medium text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:text-zinc-100 dark:hover:text-zinc-100 light:hover:text-slate-900 hover:bg-zinc-800/50 dark:hover:bg-zinc-800/50 light:hover:bg-slate-100 transition-colors"
               >
                 Sign out
               </button>

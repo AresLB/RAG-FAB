@@ -1,8 +1,9 @@
 import Link from "next/link";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100">
+    <div className="min-h-screen bg-zinc-950 dark:bg-zinc-950 light:bg-white text-zinc-100 dark:text-zinc-100 light:text-slate-900">
       {/* Navigation */}
       <nav className="fixed top-0 w-full z-50 border-b border-zinc-800/50 bg-zinc-950/80 backdrop-blur-xl">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -15,22 +16,23 @@ export default function Home() {
             <div className="flex items-center gap-6">
               <Link
                 href="#features"
-                className="text-sm text-zinc-400 hover:text-zinc-100 transition-colors"
+                className="text-sm text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:text-zinc-100 dark:hover:text-zinc-100 light:hover:text-slate-900 transition-colors"
               >
                 Features
               </Link>
               <Link
                 href="#pricing"
-                className="text-sm text-zinc-400 hover:text-zinc-100 transition-colors"
+                className="text-sm text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:text-zinc-100 dark:hover:text-zinc-100 light:hover:text-slate-900 transition-colors"
               >
                 Pricing
               </Link>
               <Link
                 href="/login"
-                className="text-sm text-zinc-400 hover:text-zinc-100 transition-colors"
+                className="text-sm text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:text-zinc-100 dark:hover:text-zinc-100 light:hover:text-slate-900 transition-colors"
               >
                 Sign in
               </Link>
+              <ThemeToggle />
               <Link
                 href="/login"
                 className="rounded-lg bg-gradient-to-r from-violet-500 to-cyan-500 px-4 py-2 text-sm font-medium text-white hover:from-violet-600 hover:to-cyan-600 transition-all"

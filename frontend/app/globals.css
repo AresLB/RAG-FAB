@@ -1,5 +1,24 @@
 @import "tailwindcss";
 
+/* Dark Theme (Default) */
+:root.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  --accent-purple: #a78bfa;
+  --accent-cyan: #22d3ee;
+  --border: #27272a;
+}
+
+/* Light Theme */
+:root.light {
+  --background: #ffffff;
+  --foreground: #0a0a0a;
+  --accent-purple: #8b5cf6;
+  --accent-cyan: #06b6d4;
+  --border: #e4e4e7;
+}
+
+/* Default to dark if no class */
 :root {
   --background: #0a0a0a;
   --foreground: #ededed;
@@ -18,4 +37,15 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-inter), system-ui, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Light theme specific overrides */
+.light body {
+  background: #fafafa;
+}
+
+/* Dark theme specific overrides */
+.dark body {
+  background: #0a0a0a;
 }
