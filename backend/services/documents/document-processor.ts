@@ -174,14 +174,16 @@ export const processDocumentWithRAG = async (
     logger.info(`Saved ${savedChunks.length} chunks to database`);
 
     // Step 4: Prepare vectors for Pinecone
+    // Note: We don't store 'text' in Pinecone metadata to reduce storage costs
+    // Text is retrieved from MongoDB when needed
     const vectors = savedChunks.map((chunk) => ({
       id: chunk.id, // Use MongoDB _id as Pinecone vector ID
-      text: chunk.content,
+      text: chunk.content, // Used only for embedding generation, not stored in metadata
       metadata: {
         documentId: document.id,
         userId,
         chunkIndex: chunk.chunkIndex,
-        text: chunk.content,
+        // text: chunk.content, // REMOVED: Redundant - stored in MongoDB
         fileName: originalName,
         fileType,
         createdAt: chunk.createdAt.toISOString()

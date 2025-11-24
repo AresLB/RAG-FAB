@@ -7,7 +7,7 @@ export interface VectorMetadata {
   documentId: string;
   userId: string;
   chunkIndex: number;
-  text: string;
+  text?: string; // Optional - text is stored in MongoDB, not needed in Pinecone metadata
   fileName: string;
   fileType: string;
   createdAt: string;

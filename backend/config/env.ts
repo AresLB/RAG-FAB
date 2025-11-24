@@ -89,7 +89,7 @@ export const env: EnvironmentConfig = {
 
   // OpenAI
   OPENAI_API_KEY: getEnvVar('OPENAI_API_KEY'),
-  OPENAI_MODEL: getEnvVar('OPENAI_MODEL', 'gpt-3.5-turbo'),
+  OPENAI_MODEL: getEnvVar('OPENAI_MODEL', 'gpt-4o-mini'), // Upgraded from gpt-3.5-turbo for better quality
 
   // Pinecone
   PINECONE_API_KEY: getEnvVar('PINECONE_API_KEY'),

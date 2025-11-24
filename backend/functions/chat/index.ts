@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { authenticate } from '../../middleware/auth.middleware';
 import { chatLimiter } from '../../middleware/rate-limit.middleware';
 import { askQuestion } from './ask';
+import { askQuestionStream } from './ask-stream';
 import {
   listConversations,
   getConversation,
@@ -20,6 +21,9 @@ router.use(authenticate);
 
 // Ask a question (with RAG)
 router.post('/ask', chatLimiter, askQuestion);
+
+// Ask a question with streaming response (with RAG)
+router.post('/ask/stream', chatLimiter, askQuestionStream);
 
 // Conversation management
 router.get('/conversations', listConversations);

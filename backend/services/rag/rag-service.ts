@@ -88,6 +88,21 @@ export const performRAGQuery = async (input: RAGQueryInput): Promise<RAGContext>
       };
     }
 
+    // Get top K results
+    const topResults = searchResults.slice(0, topK);
+
+    // Fetch chunk IDs from top results (Pinecone vector IDs match MongoDB _ids)
+    const chunkIds = topResults.map((r) => r.id);
+
+    // Fetch actual chunks from MongoDB to get text content
+    // This is more efficient than storing large text in Pinecone metadata
+    const chunks = await DocumentChunk.find({ _id: { $in: chunkIds } }).select(
+      'content documentId chunkIndex'
+    );
+
+    // Create chunk map for quick lookup
+    const chunkMap = new Map(chunks.map((chunk) => [chunk.id, chunk]));
+
     // Get document information for each chunk
     const documentIds_unique = [...new Set(searchResults.map((r) => r.metadata.documentId))];
     const documents = await Document.find({ _id: { $in: documentIds_unique } }).select(
@@ -99,17 +114,28 @@ export const performRAGQuery = async (input: RAGQueryInput): Promise<RAGContext>
     );
 
     // Build relevant chunks with document context
-    const relevantChunks: RelevantChunk[] = searchResults.slice(0, topK).map((result) => ({
-      documentId: result.metadata.documentId,
-      documentName: documentMap.get(result.metadata.documentId) || 'Unknown',
-      chunkIndex: result.metadata.chunkIndex,
-      content: result.text,
-      score: result.score,
-      metadata: {
-        pageNumber: result.metadata.pageNumber as number | undefined,
-        section: result.metadata.section as string | undefined
-      }
-    }));
+    // Text is now fetched from MongoDB instead of Pinecone metadata
+    const relevantChunks: RelevantChunk[] = topResults
+      .map((result) => {
+        const chunk = chunkMap.get(result.id);
+        if (!chunk) {
+          logger.warn('Chunk not found in MongoDB', { vectorId: result.id });
+          return null;
+        }
+
+        return {
+          documentId: result.metadata.documentId,
+          documentName: documentMap.get(result.metadata.documentId) || 'Unknown',
+          chunkIndex: result.metadata.chunkIndex,
+          content: chunk.content, // Fetched from MongoDB, not Pinecone metadata
+          score: result.score,
+          metadata: {
+            pageNumber: result.metadata.pageNumber as number | undefined,
+            section: result.metadata.section as string | undefined
+          }
+        };
+      })
+      .filter((chunk): chunk is RelevantChunk => chunk !== null);
 
     // Build context text from relevant chunks
     const contextText = relevantChunks
