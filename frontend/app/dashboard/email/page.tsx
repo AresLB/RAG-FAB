@@ -209,23 +209,23 @@ export default function EmailPage() {
   if (!provider) {
     return (
       <div className="max-w-7xl mx-auto">
-        <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 mb-4">
-            <svg className="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="bg-zinc-900/50 rounded-xl border border-zinc-800 p-12 text-center">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-zinc-800 mb-4">
+            <svg className="w-8 h-8 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
             </svg>
           </div>
-          <h3 className="text-lg font-semibold text-slate-900 mb-2">
-            Kein Email-Provider verbunden
+          <h3 className="text-lg font-semibold text-zinc-100 mb-2">
+            No email provider connected
           </h3>
-          <p className="text-slate-600 mb-6 max-w-md mx-auto">
-            Verbinden Sie Ihr Gmail- oder Outlook-Konto, um Emails zu verwalten und Antworten zu generieren.
+          <p className="text-zinc-400 mb-6 max-w-md mx-auto">
+            Connect your Gmail or Outlook account to manage emails and generate responses.
           </p>
           <button
             onClick={() => window.location.href = '/login'}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-violet-500 to-cyan-500 text-white font-medium rounded-lg hover:from-violet-600 hover:to-cyan-600 transition-all"
           >
-            Jetzt verbinden
+            Connect now
           </button>
         </div>
       </div>
@@ -236,22 +236,22 @@ export default function EmailPage() {
     <div className="max-w-7xl mx-auto">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-slate-900 mb-1">Emails</h1>
-        <p className="text-slate-600">
-          Verwalten Sie Ihre {provider === 'gmail' ? 'Gmail' : 'Outlook'} Emails und generieren Sie AI-Antworten
+        <h1 className="text-2xl font-bold text-zinc-100 mb-1">Emails</h1>
+        <p className="text-zinc-400">
+          Manage your {provider === 'gmail' ? 'Gmail' : 'Outlook'} emails and generate AI responses
         </p>
       </div>
 
       {/* Filter Setup Card */}
       {(!selectedFilter || showFilterSetup) && (
-        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 rounded-xl p-6 mb-6">
+        <div className="bg-gradient-to-br from-violet-950/20 to-cyan-950/20 border border-violet-500/20 rounded-xl p-6 mb-6">
           <div className="flex items-start justify-between mb-4">
             <div>
-              <h3 className="text-lg font-semibold text-slate-900 mb-1">
-                Email-Filter einrichten
+              <h3 className="text-lg font-semibold text-zinc-100 mb-1">
+                Set up email filter
               </h3>
-              <p className="text-sm text-slate-600">
-                Wählen Sie ein {provider === 'gmail' ? 'Label' : 'Ordner'}, um nur bestimmte Emails zu verarbeiten
+              <p className="text-sm text-zinc-400">
+                Choose a {provider === 'gmail' ? 'label' : 'folder'} to process only specific emails
               </p>
             </div>
             {selectedFilter && (
