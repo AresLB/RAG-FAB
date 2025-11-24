@@ -34,7 +34,7 @@ export interface RelevantChunk {
  * Perform RAG query: Search for relevant document chunks
  */
 export const performRAGQuery = async (input: RAGQueryInput): Promise<RAGContext> => {
-  const { query, userId, documentIds, topK = 5, minScore = 0.7 } = input;
+  const { query, userId, documentIds, topK = 5, minScore = 0.5 } = input;
 
   logger.info('Performing RAG query', {
     userId,
@@ -56,6 +56,13 @@ export const performRAGQuery = async (input: RAGQueryInput): Promise<RAGContext>
     }
 
     // Search vectors in Pinecone
+    logger.info('Starting vector search', {
+      query: query.substring(0, 100),
+      filter: JSON.stringify(filter),
+      topK: topK * 2,
+      minScore
+    });
+
     const searchResults = await searchVectors({
       query,
       topK: topK * 2, // Get more results for filtering
@@ -65,7 +72,9 @@ export const performRAGQuery = async (input: RAGQueryInput): Promise<RAGContext>
 
     logger.info('Vector search completed', {
       resultsFound: searchResults.length,
-      topScore: searchResults[0]?.score
+      topScore: searchResults[0]?.score,
+      allScores: searchResults.map(r => r.score).slice(0, 5),
+      documentIds: [...new Set(searchResults.map(r => r.metadata.documentId))]
     });
 
     // If no results found

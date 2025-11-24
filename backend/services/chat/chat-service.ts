@@ -65,7 +65,7 @@ export const generateChatCompletion = async (
       userId,
       documentIds,
       topK: 5,
-      minScore: 0.7
+      minScore: 0.5
     };
 
     const ragContext = await performRAGQuery(ragInput);
