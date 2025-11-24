@@ -1,4 +1,6 @@
 import { searchVectors, QueryResult } from './vector-service';
+import { performBM25Search } from './bm25-service';
+import { fuseSearchResults, getRecommendedConfig, HybridFusionConfig } from './hybrid-fusion';
 import { DocumentChunk } from '../../models/DocumentChunk.model';
 import { Document } from '../../models/Document.model';
 import { logger } from '../../utils/logger';
@@ -9,6 +11,16 @@ export interface RAGQueryInput {
   documentIds?: string[];
   topK?: number;
   minScore?: number;
+  /**
+   * Enable hybrid search (BM25 + semantic)
+   * Default: true (recommended for best results)
+   */
+  useHybridSearch?: boolean;
+  /**
+   * Hybrid search configuration
+   * If not provided, uses smart defaults based on query
+   */
+  hybridConfig?: HybridFusionConfig;
 }
 
 export interface RAGContext {
@@ -32,43 +44,107 @@ export interface RelevantChunk {
 
 /**
  * Perform RAG query: Search for relevant document chunks
+ * Uses hybrid search (BM25 + semantic) by default for better accuracy
  */
 export const performRAGQuery = async (input: RAGQueryInput): Promise<RAGContext> => {
-  const { query, userId, documentIds, topK = 5, minScore = 0.5 } = input;
+  const {
+    query,
+    userId,
+    documentIds,
+    topK = 5,
+    minScore = 0.5,
+    useHybridSearch = true, // Default to hybrid search
+    hybridConfig
+  } = input;
 
   logger.info('Performing RAG query', {
     userId,
     query: query.substring(0, 100),
     documentIds,
     topK,
-    minScore
+    minScore,
+    useHybridSearch
   });
 
   try {
-    // Build filter for Pinecone query
-    const filter: Record<string, any> = {
-      userId: { $eq: userId }
-    };
+    let searchResults: QueryResult[];
 
-    // If specific documents are requested, filter by them
-    if (documentIds && documentIds.length > 0) {
-      filter.documentId = { $in: documentIds };
+    if (useHybridSearch) {
+      // **HYBRID SEARCH**: Combine BM25 keyword + semantic search
+      logger.info('Using hybrid search (BM25 + semantic)');
+
+      // Build filter for Pinecone query
+      const filter: Record<string, any> = {
+        userId: { $eq: userId }
+      };
+
+      if (documentIds && documentIds.length > 0) {
+        filter.documentId = { $in: documentIds };
+      }
+
+      // Run BM25 and semantic search in parallel
+      const [bm25Results, semanticResults] = await Promise.all([
+        performBM25Search({
+          query,
+          userId,
+          documentIds,
+          topK: topK * 4 // Get more candidates for fusion
+        }),
+        searchVectors({
+          query,
+          topK: topK * 4,
+          filter,
+          minScore: minScore * 0.5 // Lower threshold for hybrid
+        })
+      ]);
+
+      logger.info('Parallel search completed', {
+        bm25Count: bm25Results.length,
+        semanticCount: semanticResults.length
+      });
+
+      // Fuse results using recommended config or provided config
+      const fusionConfig = hybridConfig || getRecommendedConfig(query);
+      const fusedResults = fuseSearchResults(bm25Results, semanticResults, fusionConfig);
+
+      // Convert fused results back to QueryResult format
+      searchResults = fusedResults.slice(0, topK * 2).map((fusedResult) => {
+        // Find the original semantic result if it exists
+        const semanticResult = semanticResults.find((r) => r.id === fusedResult.chunkId);
+
+        return {
+          id: fusedResult.chunkId,
+          score: fusedResult.fusedScore,
+          metadata: {
+            documentId: fusedResult.documentId,
+            userId,
+            chunkIndex: fusedResult.chunkIndex,
+            fileName: semanticResult?.metadata.fileName || '',
+            fileType: semanticResult?.metadata.fileType || '',
+            createdAt: semanticResult?.metadata.createdAt || new Date().toISOString()
+          },
+          text: '' // Will be fetched from MongoDB later
+        };
+      });
+    } else {
+      // **SEMANTIC-ONLY SEARCH**: Original behavior
+      logger.info('Using semantic-only search');
+
+      const filter: Record<string, any> = {
+        userId: { $eq: userId }
+      };
+
+      if (documentIds && documentIds.length > 0) {
+        filter.documentId = { $in: documentIds };
+      }
+
+      searchResults = await searchVectors({
+        query,
+        topK: topK * 2,
+        filter,
+        minScore
+      });
     }
-
-    // Search vectors in Pinecone
-    logger.info('Starting vector search', {
-      query: query.substring(0, 100),
-      filter: JSON.stringify(filter),
-      topK: topK * 2,
-      minScore
-    });
-
-    const searchResults = await searchVectors({
-      query,
-      topK: topK * 2, // Get more results for filtering
-      filter,
-      minScore
-    });
 
     logger.info('Vector search completed', {
       resultsFound: searchResults.length,
