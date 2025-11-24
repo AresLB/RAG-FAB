@@ -16,8 +16,8 @@ export default function DashboardPage() {
     <div className="max-w-7xl mx-auto">
       {/* Welcome Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-zinc-100">Welcome to Responobis</h1>
-        <p className="mt-2 text-zinc-400">
+        <h1 className="text-3xl font-bold text-slate-900 dark:text-zinc-100">Welcome to Responobis</h1>
+        <p className="mt-2 text-slate-600 dark:text-zinc-400">
           Your AI email assistant powered by your own documents
         </p>
       </div>
@@ -26,7 +26,7 @@ export default function DashboardPage() {
       <div className="grid gap-6 md:grid-cols-3 mb-8">
         <Link
           href="/dashboard/documents"
-          className="group relative block rounded-xl border border-zinc-800 bg-zinc-900/50 p-6 hover:border-violet-500/50 transition-all overflow-hidden"
+          className="group relative block rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 p-6 hover:border-violet-500/50 transition-all overflow-hidden"
         >
           <div className="absolute inset-0 bg-gradient-to-r from-violet-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
           <div className="relative">
@@ -35,10 +35,10 @@ export default function DashboardPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
             </div>
-            <h3 className="text-lg font-semibold text-zinc-100 mb-2">
+            <h3 className="text-lg font-semibold text-slate-900 dark:text-zinc-100 mb-2">
               Upload documents
             </h3>
-            <p className="text-sm text-zinc-400">
+            <p className="text-sm text-slate-600 dark:text-zinc-400">
               Add your knowledge base - PDFs, contracts, FAQs
             </p>
           </div>
@@ -46,7 +46,7 @@ export default function DashboardPage() {
 
         <Link
           href="/dashboard/chat"
-          className="group relative block rounded-xl border border-zinc-800 bg-zinc-900/50 p-6 hover:border-cyan-500/50 transition-all overflow-hidden"
+          className="group relative block rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 p-6 hover:border-cyan-500/50 transition-all overflow-hidden"
         >
           <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
           <div className="relative">
@@ -55,10 +55,10 @@ export default function DashboardPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
               </svg>
             </div>
-            <h3 className="text-lg font-semibold text-zinc-100 mb-2">
+            <h3 className="text-lg font-semibold text-slate-900 dark:text-zinc-100 mb-2">
               Start chat
             </h3>
-            <p className="text-sm text-zinc-400">
+            <p className="text-sm text-slate-600 dark:text-zinc-400">
               Ask questions about your documents
             </p>
           </div>
@@ -66,7 +66,7 @@ export default function DashboardPage() {
 
         <Link
           href="/dashboard/email"
-          className="group relative block rounded-xl border border-zinc-800 bg-zinc-900/50 p-6 hover:border-violet-500/50 transition-all overflow-hidden"
+          className="group relative block rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 p-6 hover:border-violet-500/50 transition-all overflow-hidden"
         >
           <div className="absolute inset-0 bg-gradient-to-r from-violet-500/5 via-transparent to-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
           <div className="relative">
@@ -75,10 +75,10 @@ export default function DashboardPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
               </svg>
             </div>
-            <h3 className="text-lg font-semibold text-zinc-100 mb-2">
+            <h3 className="text-lg font-semibold text-slate-900 dark:text-zinc-100 mb-2">
               Email Assistant
             </h3>
-            <p className="text-sm text-zinc-400">
+            <p className="text-sm text-slate-600 dark:text-zinc-400">
               Generate automatic email responses
             </p>
           </div>
@@ -86,8 +86,8 @@ export default function DashboardPage() {
       </div>
 
       {/* Getting Started Guide */}
-      <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-8 mb-8">
-        <h2 className="text-xl font-bold text-zinc-100 mb-6">
+      <div className="rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 p-8 mb-8">
+        <h2 className="text-xl font-bold text-slate-900 dark:text-zinc-100 mb-6">
           Getting started
         </h2>
         <div className="space-y-6">
@@ -96,10 +96,10 @@ export default function DashboardPage() {
               1
             </div>
             <div>
-              <h3 className="font-semibold text-zinc-100 mb-2">
+              <h3 className="font-semibold text-slate-900 dark:text-zinc-100 mb-2">
                 Upload your documents
               </h3>
-              <p className="text-sm text-zinc-400 leading-relaxed">
+              <p className="text-sm text-slate-600 dark:text-zinc-400 leading-relaxed">
                 Add your key documents: product specs, contracts, FAQs, templates. The AI analyzes them and uses this knowledge to generate responses.
               </p>
             </div>
@@ -110,10 +110,10 @@ export default function DashboardPage() {
               2
             </div>
             <div>
-              <h3 className="font-semibold text-zinc-100 mb-2">
+              <h3 className="font-semibold text-slate-900 dark:text-zinc-100 mb-2">
                 Test the chat
               </h3>
-              <p className="text-sm text-zinc-400 leading-relaxed">
+              <p className="text-sm text-slate-600 dark:text-zinc-400 leading-relaxed">
                 Try the chat feature and ask questions about your uploaded documents. The AI answers based on the content of your files.
               </p>
             </div>
@@ -124,10 +124,10 @@ export default function DashboardPage() {
               3
             </div>
             <div>
-              <h3 className="font-semibold text-zinc-100 mb-2">
+              <h3 className="font-semibold text-slate-900 dark:text-zinc-100 mb-2">
                 Activate Email Assistant
               </h3>
-              <p className="text-sm text-zinc-400 leading-relaxed">
+              <p className="text-sm text-slate-600 dark:text-zinc-400 leading-relaxed">
                 Connect {provider === 'gmail' ? 'your Gmail account' : provider === 'outlook' ? 'your Outlook account' : 'Gmail or Outlook'} and let the assistant automatically create response drafts for incoming requests.
               </p>
             </div>
@@ -148,7 +148,7 @@ export default function DashboardPage() {
               <h3 className="text-lg font-semibold text-violet-300 mb-2">
                 Document quality matters
               </h3>
-              <p className="text-sm text-zinc-400 leading-relaxed">
+              <p className="text-sm text-slate-600 dark:text-zinc-400 leading-relaxed">
                 The more detailed and current your documents are, the more precise the AI responses. Regularly update your documents and FAQs.
               </p>
             </div>
@@ -166,7 +166,7 @@ export default function DashboardPage() {
               <h3 className="text-lg font-semibold text-cyan-300 mb-2">
                 Privacy-first approach
               </h3>
-              <p className="text-sm text-zinc-400 leading-relaxed">
+              <p className="text-sm text-slate-600 dark:text-zinc-400 leading-relaxed">
                 You control what gets processed. Use labels or folders to decide which emails your AI assistant sees. Your data stays yours.
               </p>
             </div>

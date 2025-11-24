@@ -209,16 +209,16 @@ export default function EmailPage() {
   if (!provider) {
     return (
       <div className="max-w-7xl mx-auto">
-        <div className="bg-zinc-900/50 rounded-xl border border-zinc-800 p-12 text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-zinc-800 mb-4">
-            <svg className="w-8 h-8 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="bg-white dark:bg-zinc-900/50 rounded-xl border border-slate-200 dark:border-zinc-800 p-12 text-center">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 dark:bg-zinc-800 mb-4">
+            <svg className="w-8 h-8 text-slate-400 dark:text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
             </svg>
           </div>
-          <h3 className="text-lg font-semibold text-zinc-100 mb-2">
+          <h3 className="text-lg font-semibold text-slate-900 dark:text-zinc-100 mb-2">
             No email provider connected
           </h3>
-          <p className="text-zinc-400 mb-6 max-w-md mx-auto">
+          <p className="text-slate-600 dark:text-zinc-400 mb-6 max-w-md mx-auto">
             Connect your Gmail or Outlook account to manage emails and generate responses.
           </p>
           <button
@@ -236,8 +236,8 @@ export default function EmailPage() {
     <div className="max-w-7xl mx-auto">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-zinc-100 mb-1">Emails</h1>
-        <p className="text-zinc-400">
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-zinc-100 mb-1">Emails</h1>
+        <p className="text-slate-600 dark:text-zinc-400">
           Manage your {provider === 'gmail' ? 'Gmail' : 'Outlook'} emails and generate AI responses
         </p>
       </div>
@@ -247,10 +247,10 @@ export default function EmailPage() {
         <div className="bg-gradient-to-br from-violet-950/20 to-cyan-950/20 border border-violet-500/20 rounded-xl p-6 mb-6">
           <div className="flex items-start justify-between mb-4">
             <div>
-              <h3 className="text-lg font-semibold text-zinc-100 mb-1">
+              <h3 className="text-lg font-semibold text-slate-900 dark:text-zinc-100 mb-1">
                 Set up email filter
               </h3>
-              <p className="text-sm text-zinc-400">
+              <p className="text-sm text-slate-600 dark:text-zinc-400">
                 Choose a {provider === 'gmail' ? 'label' : 'folder'} to process only specific emails
               </p>
             </div>

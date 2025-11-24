@@ -304,8 +304,8 @@ export default function DocumentsPage() {
     <div className="max-w-6xl mx-auto">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-zinc-100 mb-2">Documents</h1>
-        <p className="text-zinc-400">
+        <h1 className="text-3xl font-bold text-slate-900 dark:text-zinc-100 mb-2">Documents</h1>
+        <p className="text-slate-600 dark:text-zinc-400">
           Upload your knowledge base - PDF, DOCX, TXT or MD files
         </p>
       </div>
@@ -314,10 +314,10 @@ export default function DocumentsPage() {
       <div
         className={`relative mb-8 rounded-xl border-2 border-dashed transition-all ${
           isDragging
-            ? 'border-violet-500 bg-violet-950/20'
+            ? 'border-violet-500 bg-violet-50 dark:bg-violet-950/20'
             : isUploading
-            ? 'border-violet-400 bg-violet-950/20'
-            : 'border-zinc-700 bg-zinc-900/50 hover:border-violet-500/50 hover:bg-zinc-800/50'
+            ? 'border-violet-400 bg-violet-50 dark:bg-violet-950/20'
+            : 'border-slate-300 dark:border-zinc-700 bg-white dark:bg-zinc-900/50 hover:border-violet-500/50 hover:bg-slate-50 dark:hover:bg-zinc-800/50'
         }`}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
@@ -380,10 +380,10 @@ export default function DocumentsPage() {
                 </div>
               </div>
               <div>
-                <p className="text-lg font-medium text-zinc-100 mb-2">
+                <p className="text-lg font-medium text-slate-900 dark:text-zinc-100 mb-2">
                   {isDragging ? 'Drop file here...' : 'Upload document'}
                 </p>
-                <p className="text-sm text-zinc-400 mb-4">
+                <p className="text-sm text-slate-600 dark:text-zinc-400 mb-4">
                   Drag and drop a file here or click to select
                 </p>
                 <button
@@ -401,7 +401,7 @@ export default function DocumentsPage() {
                   </svg>
                   Select file
                 </button>
-                <p className="text-xs text-zinc-500 mt-3">
+                <p className="text-xs text-slate-500 dark:text-zinc-500 mt-3">
                   Supported formats: PDF, DOCX, TXT, MD (max. 10MB)
                 </p>
               </div>
@@ -448,9 +448,9 @@ export default function DocumentsPage() {
       )}
 
       {/* Documents List */}
-      <div className="bg-zinc-900/50 rounded-xl border border-zinc-800 overflow-hidden shadow-sm">
-        <div className="px-6 py-4 border-b border-zinc-800 bg-zinc-800/50">
-          <h2 className="text-lg font-semibold text-zinc-100">
+      <div className="bg-white dark:bg-zinc-900/50 rounded-xl border border-slate-200 dark:border-zinc-800 overflow-hidden shadow-sm">
+        <div className="px-6 py-4 border-b border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-800/50">
+          <h2 className="text-lg font-semibold text-slate-900 dark:text-zinc-100">
             Your Documents ({documents.length})
           </h2>
         </div>
@@ -478,8 +478,8 @@ export default function DocumentsPage() {
                 />
               </svg>
             </div>
-            <h3 className="text-lg font-medium text-zinc-100 mb-2">No documents yet</h3>
-            <p className="text-zinc-400 mb-4">
+            <h3 className="text-lg font-medium text-slate-900 dark:text-zinc-100 mb-2">No documents yet</h3>
+            <p className="text-slate-600 dark:text-zinc-400 mb-4">
               Upload your first document to start with RAG-based email responses
             </p>
             <button

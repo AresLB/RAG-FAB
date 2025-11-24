@@ -1,11 +1,17 @@
+'use client';
+
 import Link from "next/link";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { LanguageToggle } from "@/components/LanguageToggle";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function Home() {
+  const { t } = useLanguage();
+
   return (
-    <div className="min-h-screen bg-zinc-950 dark:bg-zinc-950 light:bg-white text-zinc-100 dark:text-zinc-100 light:text-slate-900">
+    <div className="min-h-screen bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100">
       {/* Navigation */}
-      <nav className="fixed top-0 w-full z-50 border-b border-zinc-800/50 bg-zinc-950/80 backdrop-blur-xl">
+      <nav className="fixed top-0 w-full z-50 border-b border-slate-200 dark:border-zinc-800/50 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-xl">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
             <div className="flex items-center">
@@ -16,28 +22,31 @@ export default function Home() {
             <div className="flex items-center gap-6">
               <Link
                 href="#features"
-                className="text-sm text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:text-zinc-100 dark:hover:text-zinc-100 light:hover:text-slate-900 transition-colors"
+                className="text-sm text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-zinc-100 transition-colors"
               >
-                Features
+                {t('nav.features')}
               </Link>
               <Link
                 href="#pricing"
-                className="text-sm text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:text-zinc-100 dark:hover:text-zinc-100 light:hover:text-slate-900 transition-colors"
+                className="text-sm text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-zinc-100 transition-colors"
               >
-                Pricing
+                {t('nav.pricing')}
               </Link>
               <Link
                 href="/login"
-                className="text-sm text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:text-zinc-100 dark:hover:text-zinc-100 light:hover:text-slate-900 transition-colors"
+                className="text-sm text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-zinc-100 transition-colors"
               >
-                Sign in
+                {t('nav.signin')}
               </Link>
-              <ThemeToggle />
+              <div className="flex items-center gap-2">
+                <ThemeToggle />
+                <LanguageToggle />
+              </div>
               <Link
                 href="/login"
                 className="rounded-lg bg-gradient-to-r from-violet-500 to-cyan-500 px-4 py-2 text-sm font-medium text-white hover:from-violet-600 hover:to-cyan-600 transition-all"
               >
-                Get started
+                {t('nav.getstarted')}
               </Link>
             </div>
           </div>
@@ -48,25 +57,25 @@ export default function Home() {
       <main className="pt-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col items-center justify-center py-32 text-center">
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-zinc-800 bg-zinc-900/50 px-4 py-1.5 text-sm text-zinc-400">
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-slate-200 dark:border-zinc-800 bg-slate-100 dark:bg-zinc-900/50 px-4 py-1.5 text-sm text-slate-600 dark:text-zinc-400">
               <span className="relative flex h-2 w-2">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-cyan-400 opacity-75"></span>
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-cyan-500"></span>
               </span>
-              Your AI Email Assistant
+              {t('hero.badge')}
             </div>
 
             <h1 className="max-w-4xl text-6xl font-bold tracking-tight sm:text-7xl lg:text-8xl">
-              Like a digital intern
+              {t('hero.title1')}
               <br />
               <span className="bg-gradient-to-r from-violet-400 to-cyan-400 bg-clip-text text-transparent">
-                who never sleeps
+                {t('hero.title2')}
               </span>
             </h1>
 
-            <p className="mt-6 max-w-2xl text-lg text-zinc-400 sm:text-xl">
-              AI-powered email drafts based on YOUR documents.
-              <span className="text-zinc-300 font-medium"> You stay in control.</span> We don't read your emails - your AI assistant does.
+            <p className="mt-6 max-w-2xl text-lg text-slate-600 dark:text-zinc-400 sm:text-xl">
+              {t('hero.subtitle1')}
+              <span className="text-slate-900 dark:text-zinc-300 font-medium"> {t('hero.subtitle2')}</span> {t('hero.subtitle3')}
             </p>
 
             <div className="mt-10 flex flex-col sm:flex-row items-center gap-4">
@@ -74,28 +83,28 @@ export default function Home() {
                 href="/login"
                 className="rounded-lg bg-gradient-to-r from-violet-500 to-cyan-500 px-8 py-3.5 text-base font-semibold text-white shadow-lg shadow-violet-500/25 hover:from-violet-600 hover:to-cyan-600 transition-all"
               >
-                Start for free
+                {t('hero.cta1')}
               </Link>
               <a
                 href="#demo"
-                className="rounded-lg border border-zinc-700 bg-zinc-900/50 px-8 py-3.5 text-base font-semibold text-zinc-100 hover:bg-zinc-800/50 transition-colors"
+                className="rounded-lg border border-slate-300 dark:border-zinc-700 bg-slate-100 dark:bg-zinc-900/50 px-8 py-3.5 text-base font-semibold text-slate-900 dark:text-zinc-100 hover:bg-slate-200 dark:hover:bg-zinc-800/50 transition-colors"
               >
-                Watch demo
+                {t('hero.cta2')}
               </a>
             </div>
 
-            <div className="mt-8 flex items-center gap-8 text-sm text-zinc-500">
+            <div className="mt-8 flex items-center gap-8 text-sm text-slate-500 dark:text-zinc-500">
               <div className="flex items-center gap-2">
                 <svg className="h-5 w-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
-                No credit card required
+                {t('hero.feature1')}
               </div>
               <div className="flex items-center gap-2">
                 <svg className="h-5 w-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
-                Free forever plan
+                {t('hero.feature2')}
               </div>
             </div>
           </div>

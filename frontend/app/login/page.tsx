@@ -29,16 +29,16 @@ function LoginContent() {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-950 flex items-center justify-center px-4 py-12">
+    <div className="min-h-screen bg-white dark:bg-zinc-950 flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
         {/* Logo/Header */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-block group">
-            <h1 className="text-3xl font-bold text-zinc-100 group-hover:text-white transition-colors">
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-zinc-100 group-hover:text-slate-700 dark:group-hover:text-white transition-colors">
               Responobis
             </h1>
           </Link>
-          <p className="mt-3 text-zinc-400">
+          <p className="mt-3 text-slate-600 dark:text-zinc-400">
             Sign in to your account
           </p>
         </div>
@@ -72,7 +72,7 @@ function LoginContent() {
         )}
 
         {/* Login Card */}
-        <div className="relative rounded-2xl border border-zinc-800 bg-zinc-900/50 backdrop-blur-xl p-8">
+        <div className="relative rounded-2xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 backdrop-blur-xl p-8">
           {/* Gradient glow effect */}
           <div className="absolute inset-0 -z-10 bg-gradient-to-r from-violet-500/5 to-cyan-500/5 blur-xl rounded-2xl"></div>
 
@@ -80,7 +80,7 @@ function LoginContent() {
             {/* Gmail Login Button */}
             <button
               onClick={handleGmailLogin}
-              className="w-full flex items-center justify-center gap-3 rounded-lg border border-zinc-700 bg-zinc-800/50 px-6 py-3.5 font-semibold text-zinc-100 hover:bg-zinc-700/50 hover:border-zinc-600 transition-all"
+              className="w-full flex items-center justify-center gap-3 rounded-lg border border-slate-300 dark:border-zinc-700 bg-slate-50 dark:bg-zinc-800/50 px-6 py-3.5 font-semibold text-slate-900 dark:text-zinc-100 hover:bg-slate-100 dark:hover:bg-zinc-700/50 hover:border-slate-400 dark:hover:border-zinc-600 transition-all"
             >
               <svg className="h-5 w-5" viewBox="0 0 24 24">
                 <path
@@ -106,7 +106,7 @@ function LoginContent() {
             {/* Outlook Login Button */}
             <button
               onClick={handleOutlookLogin}
-              className="w-full flex items-center justify-center gap-3 rounded-lg border border-zinc-700 bg-zinc-800/50 px-6 py-3.5 font-semibold text-zinc-100 hover:bg-zinc-700/50 hover:border-zinc-600 transition-all"
+              className="w-full flex items-center justify-center gap-3 rounded-lg border border-slate-300 dark:border-zinc-700 bg-slate-50 dark:bg-zinc-800/50 px-6 py-3.5 font-semibold text-slate-900 dark:text-zinc-100 hover:bg-slate-100 dark:hover:bg-zinc-700/50 hover:border-slate-400 dark:hover:border-zinc-600 transition-all"
             >
               <svg className="h-5 w-5" viewBox="0 0 24 24">
                 <path
@@ -120,23 +120,23 @@ function LoginContent() {
 
           {/* Divider */}
           <div className="my-8 flex items-center">
-            <div className="flex-1 border-t border-zinc-800"></div>
-            <span className="px-4 text-sm text-zinc-500">or</span>
-            <div className="flex-1 border-t border-zinc-800"></div>
+            <div className="flex-1 border-t border-slate-200 dark:border-zinc-800"></div>
+            <span className="px-4 text-sm text-slate-500 dark:text-zinc-500">or</span>
+            <div className="flex-1 border-t border-slate-200 dark:border-zinc-800"></div>
           </div>
 
           {/* Coming Soon */}
-          <div className="text-center p-4 rounded-lg bg-zinc-800/30 border border-zinc-800">
-            <p className="text-sm text-zinc-400">
+          <div className="text-center p-4 rounded-lg bg-slate-50 dark:bg-zinc-800/30 border border-slate-200 dark:border-zinc-800">
+            <p className="text-sm text-slate-600 dark:text-zinc-400">
               Email & password sign in coming soon
             </p>
           </div>
         </div>
 
         {/* Privacy Badge */}
-        <div className="mt-6 p-4 rounded-lg border border-zinc-800/50 bg-zinc-900/30 text-center">
-          <div className="flex items-center justify-center gap-2 text-sm text-zinc-400">
-            <svg className="w-4 h-4 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <div className="mt-6 p-4 rounded-lg border border-slate-200 dark:border-zinc-800/50 bg-slate-50 dark:bg-zinc-900/30 text-center">
+          <div className="flex items-center justify-center gap-2 text-sm text-slate-600 dark:text-zinc-400">
+            <svg className="w-4 h-4 text-green-500 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
             </svg>
             <span>Your data stays private and secure</span>
@@ -144,13 +144,13 @@ function LoginContent() {
         </div>
 
         {/* Terms */}
-        <p className="mt-6 text-center text-xs text-zinc-500">
+        <p className="mt-6 text-center text-xs text-slate-500 dark:text-zinc-500">
           By signing in, you agree to our{' '}
-          <a href="#" className="text-zinc-400 hover:text-zinc-100 transition-colors underline">
+          <a href="#" className="text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-zinc-100 transition-colors underline">
             Terms of Service
           </a>{' '}
           and{' '}
-          <a href="#" className="text-zinc-400 hover:text-zinc-100 transition-colors underline">
+          <a href="#" className="text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-zinc-100 transition-colors underline">
             Privacy Policy
           </a>
         </p>
@@ -159,7 +159,7 @@ function LoginContent() {
         <div className="mt-8 text-center">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-zinc-100 transition-colors group"
+            className="inline-flex items-center gap-2 text-sm text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-zinc-100 transition-colors group"
           >
             <svg className="w-4 h-4 group-hover:-translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -176,11 +176,11 @@ export default function LoginPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-zinc-950 flex items-center justify-center px-4">
+        <div className="min-h-screen bg-white dark:bg-zinc-950 flex items-center justify-center px-4">
           <div className="w-full max-w-md">
-            <div className="relative rounded-2xl border border-zinc-800 bg-zinc-900/50 p-8 text-center">
+            <div className="relative rounded-2xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 p-8 text-center">
               <div className="inline-block h-10 w-10 animate-spin rounded-full border-4 border-solid border-violet-500 border-r-transparent"></div>
-              <p className="mt-4 text-sm text-zinc-400">Loading...</p>
+              <p className="mt-4 text-sm text-slate-600 dark:text-zinc-400">Loading...</p>
             </div>
           </div>
         </div>
