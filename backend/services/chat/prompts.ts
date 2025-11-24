@@ -258,3 +258,91 @@ export function detectDomain(
 
   return PromptDomain.GENERAL;
 }
+
+/**
+ * Detect language from query and document content
+ * Supports German (de) and English (en)
+ */
+export function detectLanguage(query: string, documentContent?: string): 'de' | 'en' {
+  const text = (query + ' ' + (documentContent?.substring(0, 500) || '')).toLowerCase();
+
+  // German indicators - common German words that are rare in English
+  const germanIndicators = [
+    'der',
+    'die',
+    'das',
+    'und',
+    'ist',
+    'von',
+    'mit',
+    'zu',
+    'für',
+    'auf',
+    'ein',
+    'eine',
+    'sich',
+    'nicht',
+    'werden',
+    'können',
+    'müssen',
+    'würde',
+    'hätte',
+    'möchte',
+    'welche',
+    'dieser',
+    'jener',
+    'über',
+    'unter',
+    'zwischen',
+    'während',
+    'ä',
+    'ö',
+    'ü',
+    'ß'
+  ];
+
+  // English indicators - common English words that are rare in German
+  const englishIndicators = [
+    'the',
+    'and',
+    'with',
+    'for',
+    'this',
+    'that',
+    'from',
+    'have',
+    'has',
+    'will',
+    'would',
+    'could',
+    'should',
+    'about',
+    'which',
+    'between',
+    'during',
+    'their',
+    'there',
+    'these',
+    'those'
+  ];
+
+  // Count matches for each language
+  let germanScore = 0;
+  let englishScore = 0;
+
+  germanIndicators.forEach((word) => {
+    // Use word boundaries to avoid matching substrings
+    const regex = new RegExp(`\\b${word}\\b`, 'gi');
+    const matches = text.match(regex);
+    if (matches) germanScore += matches.length;
+  });
+
+  englishIndicators.forEach((word) => {
+    const regex = new RegExp(`\\b${word}\\b`, 'gi');
+    const matches = text.match(regex);
+    if (matches) englishScore += matches.length;
+  });
+
+  // Default to German if scores are equal (since system was originally German)
+  return englishScore > germanScore ? 'en' : 'de';
+}
