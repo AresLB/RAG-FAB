@@ -1,9 +1,11 @@
 import { searchVectors, QueryResult } from './vector-service';
 import { performBM25Search } from './bm25-service';
 import { fuseSearchResults, getRecommendedConfig, HybridFusionConfig } from './hybrid-fusion';
+import { rerankChunks, RerankConfig } from './rerank-service';
 import { DocumentChunk } from '../../models/DocumentChunk.model';
 import { Document } from '../../models/Document.model';
 import { logger } from '../../utils/logger';
+import { env } from '../../config/env';
 
 export interface RAGQueryInput {
   query: string;
@@ -21,6 +23,18 @@ export interface RAGQueryInput {
    * If not provided, uses smart defaults based on query
    */
   hybridConfig?: HybridFusionConfig;
+  /**
+   * Enable re-ranking for improved precision
+   * Default: true (highly recommended)
+   * Retrieves more candidates (topK * 3-4), then re-ranks to select best
+   */
+  useReranking?: boolean;
+  /**
+   * Re-ranking model to use
+   * - 'llm': OpenAI-based scoring (default, no extra cost)
+   * - 'cohere': Cohere Rerank API (requires API key, best quality)
+   */
+  rerankModel?: 'llm' | 'cohere';
 }
 
 export interface RAGContext {
@@ -54,16 +68,24 @@ export const performRAGQuery = async (input: RAGQueryInput): Promise<RAGContext>
     topK = 5,
     minScore = 0.5,
     useHybridSearch = true, // Default to hybrid search
-    hybridConfig
+    hybridConfig,
+    useReranking = true, // Default to re-ranking (highly recommended)
+    rerankModel = 'llm'
   } = input;
+
+  // Calculate how many candidates to retrieve for re-ranking
+  const retrievalK = useReranking ? topK * 4 : topK * 2;
 
   logger.info('Performing RAG query', {
     userId,
     query: query.substring(0, 100),
     documentIds,
     topK,
+    retrievalK,
     minScore,
-    useHybridSearch
+    useHybridSearch,
+    useReranking,
+    rerankModel
   });
 
   try {
@@ -88,11 +110,11 @@ export const performRAGQuery = async (input: RAGQueryInput): Promise<RAGContext>
           query,
           userId,
           documentIds,
-          topK: topK * 4 // Get more candidates for fusion
+          topK: retrievalK // Get more candidates for fusion + reranking
         }),
         searchVectors({
           query,
-          topK: topK * 4,
+          topK: retrievalK,
           filter,
           minScore: minScore * 0.5 // Lower threshold for hybrid
         })
@@ -108,7 +130,7 @@ export const performRAGQuery = async (input: RAGQueryInput): Promise<RAGContext>
       const fusedResults = fuseSearchResults(bm25Results, semanticResults, fusionConfig);
 
       // Convert fused results back to QueryResult format
-      searchResults = fusedResults.slice(0, topK * 2).map((fusedResult) => {
+      searchResults = fusedResults.slice(0, retrievalK).map((fusedResult) => {
         // Find the original semantic result if it exists
         const semanticResult = semanticResults.find((r) => r.id === fusedResult.chunkId);
 
@@ -140,18 +162,63 @@ export const performRAGQuery = async (input: RAGQueryInput): Promise<RAGContext>
 
       searchResults = await searchVectors({
         query,
-        topK: topK * 2,
+        topK: retrievalK,
         filter,
         minScore
       });
     }
 
-    logger.info('Vector search completed', {
+    logger.info('Initial retrieval completed', {
       resultsFound: searchResults.length,
       topScore: searchResults[0]?.score,
       allScores: searchResults.map(r => r.score).slice(0, 5),
       documentIds: [...new Set(searchResults.map(r => r.metadata.documentId))]
     });
+
+    // **RE-RANKING STAGE**: Improve precision by re-scoring candidates
+    if (useReranking && searchResults.length > topK) {
+      logger.info('Starting re-ranking', {
+        candidatesCount: searchResults.length,
+        targetCount: topK,
+        model: rerankModel
+      });
+
+      const chunkIds = searchResults.map((r) => r.id);
+
+      // Prepare re-ranking config
+      const rerankConfig: RerankConfig = {
+        cohereApiKey: process.env.COHERE_API_KEY
+      };
+
+      // Re-rank chunks
+      const rerankedResults = await rerankChunks(
+        {
+          query,
+          chunkIds,
+          topK,
+          model: rerankModel
+        },
+        rerankConfig
+      );
+
+      // Map re-ranked IDs back to original search results
+      const rerankedMap = new Map(rerankedResults.map((r) => [r.chunkId, r.rerankScore]));
+      searchResults = rerankedResults.map((reranked) => {
+        const original = searchResults.find((r) => r.id === reranked.chunkId)!;
+        return {
+          ...original,
+          score: reranked.rerankScore // Use re-rank score
+        };
+      });
+
+      logger.info('Re-ranking completed', {
+        finalCount: searchResults.length,
+        topRerankScore: searchResults[0]?.score.toFixed(3)
+      });
+    } else if (searchResults.length > topK) {
+      // No re-ranking: just take top K
+      searchResults = searchResults.slice(0, topK);
+    }
 
     // If no results found
     if (searchResults.length === 0) {
