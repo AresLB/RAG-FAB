@@ -35,6 +35,14 @@ export interface RAGQueryInput {
    * - 'cohere': Cohere Rerank API (requires API key, best quality)
    */
   rerankModel?: 'llm' | 'cohere';
+  /**
+   * Conservative mode: Higher precision, lower recall
+   * - Increases minScore threshold
+   * - Only returns highly confident results
+   * - Better for business-critical use cases (real estate, legal, medical)
+   * Default: false
+   */
+  conservativeMode?: boolean;
 }
 
 export interface RAGContext {
@@ -42,6 +50,21 @@ export interface RAGContext {
   relevantChunks: RelevantChunk[];
   totalChunks: number;
   contextText: string;
+  /**
+   * Confidence level for the retrieved results
+   * - 'high': All chunks have score > 0.75, safe to use
+   * - 'medium': Some chunks 0.5-0.75, review recommended
+   * - 'low': Chunks < 0.5, high risk of inaccuracy
+   */
+  confidence: 'high' | 'medium' | 'low';
+  /**
+   * Average relevance score of top chunks
+   */
+  avgScore: number;
+  /**
+   * Warning message if confidence is low or results are questionable
+   */
+  warning?: string;
 }
 
 export interface RelevantChunk {
@@ -66,12 +89,18 @@ export const performRAGQuery = async (input: RAGQueryInput): Promise<RAGContext>
     userId,
     documentIds,
     topK = 5,
-    minScore = 0.5,
+    minScore: inputMinScore,
     useHybridSearch = true, // Default to hybrid search
     hybridConfig,
     useReranking = true, // Default to re-ranking (highly recommended)
-    rerankModel = 'llm'
+    rerankModel = 'llm',
+    conservativeMode = false
   } = input;
+
+  // Apply conservative mode settings for higher precision
+  const minScore = conservativeMode
+    ? Math.max(inputMinScore || 0.7, 0.7) // Minimum 0.7 in conservative mode
+    : (inputMinScore || 0.5);
 
   // Calculate how many candidates to retrieve for re-ranking
   const retrievalK = useReranking ? topK * 4 : topK * 2;
@@ -85,7 +114,8 @@ export const performRAGQuery = async (input: RAGQueryInput): Promise<RAGContext>
     minScore,
     useHybridSearch,
     useReranking,
-    rerankModel
+    rerankModel,
+    conservativeMode
   });
 
   try {
@@ -227,7 +257,10 @@ export const performRAGQuery = async (input: RAGQueryInput): Promise<RAGContext>
         query,
         relevantChunks: [],
         totalChunks: 0,
-        contextText: ''
+        contextText: '',
+        confidence: 'low',
+        avgScore: 0,
+        warning: 'No relevant information found in the documents. Cannot provide an accurate answer.'
       };
     }
 
@@ -288,19 +321,56 @@ export const performRAGQuery = async (input: RAGQueryInput): Promise<RAGContext>
       )
       .join('\n\n---\n\n');
 
+    // Calculate confidence level and generate warnings
+    const avgScore = relevantChunks.reduce((sum, c) => sum + c.score, 0) / relevantChunks.length;
+    const minChunkScore = Math.min(...relevantChunks.map((c) => c.score));
+    const maxChunkScore = Math.max(...relevantChunks.map((c) => c.score));
+
+    let confidence: 'high' | 'medium' | 'low';
+    let warning: string | undefined;
+
+    // Determine confidence level based on scores
+    if (minChunkScore >= 0.75 && avgScore >= 0.8) {
+      confidence = 'high';
+    } else if (minChunkScore >= 0.5 && avgScore >= 0.65) {
+      confidence = 'medium';
+      warning = conservativeMode
+        ? 'Some information has medium confidence. Please verify critical details.'
+        : undefined;
+    } else {
+      confidence = 'low';
+      warning = 'Low confidence in retrieved information. Results may be incomplete or inaccurate. Verify all facts before use.';
+    }
+
+    // Additional warnings for conservative mode
+    if (conservativeMode && relevantChunks.length < topK) {
+      warning = (warning || '') + ` Only ${relevantChunks.length} of ${topK} requested chunks met the quality threshold.`;
+    }
+
+    // Warn if document sources are mixed (potential for confusion)
+    const uniqueDocuments = new Set(relevantChunks.map((c) => c.documentId));
+    if (uniqueDocuments.size > 1 && conservativeMode) {
+      warning =
+        (warning || '') +
+        ` Information comes from ${uniqueDocuments.size} different documents. Ensure answer doesn't mix unrelated information.`;
+    }
+
     logger.info('RAG context built successfully', {
       relevantChunks: relevantChunks.length,
       contextLength: contextText.length,
-      avgScore: (
-        relevantChunks.reduce((sum, c) => sum + c.score, 0) / relevantChunks.length
-      ).toFixed(3)
+      avgScore: avgScore.toFixed(3),
+      confidence,
+      warning: warning || 'none'
     });
 
     return {
       query,
       relevantChunks,
       totalChunks: searchResults.length,
-      contextText
+      contextText,
+      confidence,
+      avgScore,
+      warning
     };
   } catch (error: any) {
     logger.error('RAG query failed', {
