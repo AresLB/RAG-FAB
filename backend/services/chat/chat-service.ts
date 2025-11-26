@@ -59,14 +59,24 @@ export const generateChatCompletion = async (
   });
 
   try {
+    // Step 1: Detect domain from query to determine if conservative mode is needed
+    const detectedDomain = detectDomain('', query);
+    const useConservativeMode =
+      detectedDomain === PromptDomain.REAL_ESTATE ||
+      detectedDomain === PromptDomain.LEGAL ||
+      detectedDomain === PromptDomain.MEDICAL;
+
     // Step 1: Perform RAG query to get relevant context
     const ragInput: RAGQueryInput = {
       query,
       userId,
       documentIds,
       topK: 5,
-      minScore: 0.5
+      minScore: useConservativeMode ? 0.7 : 0.5,
+      conservativeMode: useConservativeMode
     };
+
+    logger.info('RAG query settings', { detectedDomain, useConservativeMode });
 
     const ragContext = await performRAGQuery(ragInput);
 
@@ -174,6 +184,19 @@ Be polite and helpful.`;
     language
   });
 
+  // Add confidence warning if needed
+  let confidenceWarning = '';
+  if (ragContext.warning) {
+    confidenceWarning = language === 'de'
+      ? `\n\n⚠️ WICHTIGER HINWEIS ZUR DATENQUALITÄT:\n${ragContext.warning}\n\nBitte berücksichtige dies in deiner Antwort und weise den User auf Unsicherheiten hin.\n`
+      : `\n\n⚠️ IMPORTANT NOTE ON DATA QUALITY:\n${ragContext.warning}\n\nPlease consider this in your response and inform the user about uncertainties.\n`;
+  }
+
+  // Add confidence level info
+  const confidenceInfo = language === 'de'
+    ? `\nVertrauensniveau: ${ragContext.confidence.toUpperCase()} (Durchschn. Relevanz: ${(ragContext.avgScore * 100).toFixed(1)}%)`
+    : `\nConfidence Level: ${ragContext.confidence.toUpperCase()} (Avg. Relevance: ${(ragContext.avgScore * 100).toFixed(1)}%)`;
+
   // Combine domain prompt with context (context separator in appropriate language)
   const contextHeader = language === 'de'
     ? 'RELEVANTER KONTEXT AUS DEN DOKUMENTEN:'
@@ -183,10 +206,11 @@ Be polite and helpful.`;
     : 'Now answer the user\'s question based on this context. If the context does not contain sufficient information, be honest about it.';
 
   return `${domainPrompt}
-
+${confidenceWarning}
 ---
 
 ${contextHeader}
+${confidenceInfo}
 
 ${ragContext.contextText}
 
@@ -225,14 +249,24 @@ export const streamChatCompletion = async (
   });
 
   try {
+    // Step 1: Detect domain from query to determine if conservative mode is needed
+    const detectedDomain = detectDomain('', query);
+    const useConservativeMode =
+      detectedDomain === PromptDomain.REAL_ESTATE ||
+      detectedDomain === PromptDomain.LEGAL ||
+      detectedDomain === PromptDomain.MEDICAL;
+
     // Step 1: Perform RAG query to get relevant context
     const ragInput: RAGQueryInput = {
       query,
       userId,
       documentIds,
       topK: 5,
-      minScore: 0.5
+      minScore: useConservativeMode ? 0.7 : 0.5,
+      conservativeMode: useConservativeMode
     };
+
+    logger.info('RAG query settings (streaming)', { detectedDomain, useConservativeMode });
 
     const ragContext = await performRAGQuery(ragInput);
 
