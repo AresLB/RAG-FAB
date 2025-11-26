@@ -12,7 +12,7 @@ import { getMaxFileSize } from '../../shared/constants/plans';
 // Files are processed immediately and not persisted to disk
 const storage = multer.memoryStorage();
 
-// File filter - only allow PDF, DOCX, TXT
+// File filter - allow PDF, DOCX, TXT, and images (PNG, JPG, JPEG)
 const fileFilter = (req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
   const allowedMimes = FILE_LIMITS.ALLOWED_MIME_TYPES;
   const allowedExts = FILE_LIMITS.ALLOWED_EXTENSIONS;
