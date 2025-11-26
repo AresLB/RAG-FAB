@@ -10,9 +10,12 @@ export const FILE_LIMITS = {
   ALLOWED_MIME_TYPES: [
     'application/pdf',
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    'text/plain'
+    'text/plain',
+    'image/png',
+    'image/jpeg',
+    'image/jpg'
   ],
-  ALLOWED_EXTENSIONS: ['.pdf', '.docx', '.txt']
+  ALLOWED_EXTENSIONS: ['.pdf', '.docx', '.txt', '.png', '.jpg', '.jpeg']
 };
 
 // Rate Limiting
